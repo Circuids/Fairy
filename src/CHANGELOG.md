@@ -1,3 +1,35 @@
+## 2.0.0+1
+
+**Documentation Enhancement** - Improved clarity on change notification APIs and ViewModel testing.
+
+### 📚 Documentation
+
+#### Change Notification APIs - Clarified Isolation
+- **Rewrote Core Concepts section** to properly explain notification isolation between observable types
+- **Added clarity table** showing `propertyChanged()` scope for each type:
+  - `ObservableProperty<T>` → Only notifies listeners of this specific property
+  - `ComputedProperty<T>` → Only notifies listeners of this specific computed property
+  - `ObservableObject` → Only notifies for vanilla fields (via `onPropertyChanged()`)
+- **Key insight documented**: `ObservableProperty` and `ComputedProperty` changes do **NOT** trigger `ObservableObject.propertyChanged()` listeners - this enables Fairy's granular rebuild performance
+- **Added decision table** for choosing between approaches
+
+#### Testing Section - Emphasis on ViewModel Testing
+- **Rewrote Testing section** to emphasize that ViewModels are plain Dart classes
+- **Added 4 comprehensive unit test examples**:
+  - Basic command execution testing
+  - `canExecute` validation testing
+  - Computed property auto-update testing
+  - Async command loading state testing
+- **Highlighted**: No mocking frameworks or special setup required
+- Package test coverage moved to dedicated subsection
+
+### Notes
+
+- Documentation-only release, no code changes
+- Fully backward compatible
+
+---
+
 ## 2.0.0
 
 **V2 Major Release** - Cleaner API with better error handling and simplified dependency injection.
