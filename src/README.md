@@ -273,6 +273,82 @@ late final total = ComputedProperty<double>(
 // Automatically recalculates when price or qty changes
 ```
 
+### Change Notification APIs
+
+Fairy provides change notification at multiple levels. **Important:** Each observable type has its own isolated notification system.
+
+| Type | `propertyChanged()` Scope | Auto-Notifies UI |
+|------|---------------------------|------------------|
+| `ObservableProperty<T>` | Only this property | ✅ On `.value` change |
+| `ComputedProperty<T>` | Only this property | ✅ On dependency change |
+| `ObservableObject` | Only vanilla fields | ❌ Must call `onPropertyChanged()` |
+
+**Key insight:** `ObservableProperty` and `ComputedProperty` changes do **NOT** trigger `ObservableObject.propertyChanged()` listeners. Each type manages its own listeners independently - this enables Fairy's granular rebuild performance.
+
+#### Subscribing to Changes
+
+Use `propertyChanged(listener)` to subscribe. Returns a disposer function:
+
+```dart
+// Subscribe to ObservableProperty changes
+final dispose = userName.propertyChanged(() {
+  print('Name changed to: ${userName.value}');
+  saveCommand.notifyCanExecuteChanged();  // Common pattern
+});
+
+// Subscribe to ComputedProperty changes
+final dispose = fullName.propertyChanged(() {
+  print('Full name updated: ${fullName.value}');
+});
+
+// Subscribe to ObservableObject (vanilla fields only!)
+final dispose = viewModel.propertyChanged(() {
+  // ⚠️ Only triggered by onPropertyChanged() calls
+  // NOT triggered by ObservableProperty/ComputedProperty changes
+  print('Vanilla field changed!');
+});
+
+// IMPORTANT: Always capture and call the disposer!
+dispose();  // Clean up when done
+```
+
+#### Using Vanilla Fields with `onPropertyChanged()`
+
+For plain Dart fields (not `ObservableProperty`), manually call `onPropertyChanged()`:
+
+```dart
+class UserViewModel extends ObservableObject {
+  String _name = '';  // Vanilla field
+  int _age = 0;       // Vanilla field
+  
+  String get name => _name;
+  int get age => _age;
+  
+  void updateName(String value) {
+    _name = value;
+    onPropertyChanged();  // Manually notify listeners
+  }
+  
+  // Batch updates - single notification
+  void updateUser(String name, int age) {
+    _name = name;
+    _age = age;
+    onPropertyChanged();  // One notification for both changes
+  }
+}
+```
+
+**When to use each approach:**
+
+| Approach | Use Case |
+|----------|----------|
+| `ObservableProperty` | Default choice - automatic notifications |
+| Vanilla fields + `onPropertyChanged()` | Batch updates, legacy migration |
+| `property.propertyChanged()` | Cross-ViewModel sync, side effects |
+| `viewModel.propertyChanged()` | Listen to vanilla field changes only |
+- Use plain fields + `onPropertyChanged()` - for batch updates or legacy code migration
+- Use `propertyChanged()` - for cross-ViewModel communication or triggering side effects
+
 ## Dependency Injection
 
 ### FairyScope - Widget-Scoped DI
@@ -713,16 +789,62 @@ See the [example](../example) directory for a complete counter app demonstrating
 
 ## Testing
 
-**574 tests passing** - covering observable properties, commands, auto-disposal, dependency injection, widget binding, deep equality, command auto-tracking, error handling, and overlays.
+Fairy ViewModels are **plain Dart classes** - no mocking frameworks or special setup required. Test business logic directly without widget overhead.
+
+### Unit Testing ViewModels
 
 ```dart
 test('increment updates counter', () {
   final vm = CounterViewModel();
+  
   vm.incrementCommand.execute();
+  
   expect(vm.counter.value, 1);
   vm.dispose();
 });
 
+test('login command validates email', () {
+  final vm = LoginViewModel();
+  
+  vm.email.value = 'invalid';
+  expect(vm.loginCommand.canExecute, false);
+  
+  vm.email.value = 'user@example.com';
+  vm.password.value = 'password123';
+  expect(vm.loginCommand.canExecute, true);
+  
+  vm.dispose();
+});
+
+test('computed property updates automatically', () {
+  final vm = CartViewModel();
+  
+  vm.price.value = 10.0;
+  vm.quantity.value = 3;
+  
+  expect(vm.total.value, 30.0);  // Automatically computed
+  vm.dispose();
+});
+
+test('async command handles loading state', () async {
+  final vm = DataViewModel();
+  
+  expect(vm.fetchCommand.isRunning, false);
+  
+  final future = vm.fetchCommand.execute();
+  expect(vm.fetchCommand.isRunning, true);
+  
+  await future;
+  expect(vm.fetchCommand.isRunning, false);
+  expect(vm.data.value, isNotEmpty);
+  
+  vm.dispose();
+});
+```
+
+### Widget Testing
+
+```dart
 testWidgets('counter increments on tap', (tester) async {
   await tester.pumpWidget(MaterialApp(
     home: FairyScope(
@@ -737,6 +859,10 @@ testWidgets('counter increments on tap', (tester) async {
   expect(find.text('1'), findsOneWidget);
 });
 ```
+
+### Package Test Coverage
+
+**574 tests passing** - covering observable properties, commands, auto-disposal, dependency injection, widget binding, deep equality, command auto-tracking, error handling, and overlays.
 
 ## Architecture Guidelines
 

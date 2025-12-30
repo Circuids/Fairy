@@ -13,7 +13,8 @@ class ProviderCounterWidget extends StatelessWidget {
       child: Column(
         children: [
           provider.Consumer<ProviderCounterNotifier>(
-            builder: (context, notifier, child) => Text('Count: ${notifier.counter}'),
+            builder: (context, notifier, child) =>
+                Text('Count: ${notifier.counter}'),
           ),
           provider.Consumer<ProviderCounterNotifier>(
             builder: (context, notifier, child) => ElevatedButton(

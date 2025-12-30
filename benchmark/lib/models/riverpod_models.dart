@@ -9,9 +9,10 @@ class RiverpodCounterNotifier extends StateNotifier<int> {
   }
 }
 
-final riverpodCounterProvider = StateNotifierProvider<RiverpodCounterNotifier, int>(
-  (ref) => RiverpodCounterNotifier(),
-);
+final riverpodCounterProvider =
+    StateNotifierProvider<RiverpodCounterNotifier, int>(
+      (ref) => RiverpodCounterNotifier(),
+    );
 
 /// Multi-property StateNotifier for selective rebuild testing
 class RiverpodMultiPropertyNotifier extends StateNotifier<Map<String, int>> {
@@ -30,6 +31,7 @@ class RiverpodMultiPropertyNotifier extends StateNotifier<Map<String, int>> {
   }
 }
 
-final riverpodMultiProvider = StateNotifierProvider<RiverpodMultiPropertyNotifier, Map<String, int>>(
-  (ref) => RiverpodMultiPropertyNotifier(),
-);
+final riverpodMultiProvider =
+    StateNotifierProvider<RiverpodMultiPropertyNotifier, Map<String, int>>(
+      (ref) => RiverpodMultiPropertyNotifier(),
+    );

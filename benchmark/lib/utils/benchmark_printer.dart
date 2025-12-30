@@ -3,22 +3,40 @@ import '../models/benchmark_results.dart';
 /// Prints formatted benchmark results to console
 void printBenchmarkResults(BenchmarkResults results) {
   print('\n');
-  print('╔═══════════════════════════════════════════════════════════════════╗');
-  print('║          🏆 Flutter State Management Benchmark Results 🏆         ║');
-  print('╚═══════════════════════════════════════════════════════════════════╝');
+  print(
+    '╔═══════════════════════════════════════════════════════════════════╗',
+  );
+  print(
+    '║          🏆 Flutter State Management Benchmark Results 🏆         ║',
+  );
+  print(
+    '╚═══════════════════════════════════════════════════════════════════╝',
+  );
   print('');
 
   // Widget Performance Table
-  printSection('Widget Performance (1000 interactions)', results.widgetPerformance);
-  
+  printSection(
+    'Widget Performance (1000 interactions)',
+    results.widgetPerformance,
+  );
+
   // Memory Performance Table
-  printSection('Memory Management (50 create/dispose cycles)', results.memoryPerformance);
+  printSection(
+    'Memory Management (50 create/dispose cycles)',
+    results.memoryPerformance,
+  );
 
   // Selective Rebuild Performance Table (using explicit Bind with selectors)
-  printSection('Selective Rebuild Performance (100 property updates, explicit Bind)', results.selectiveRebuildPerformance);
+  printSection(
+    'Selective Rebuild Performance (100 property updates, explicit Bind)',
+    results.selectiveRebuildPerformance,
+  );
 
   // Rebuild Performance Table (using Bind.viewModel auto-tracking)
-  printSection('Rebuild Performance (100 property updates, auto-tracking)', results.rebuildPerformance);
+  printSection(
+    'Rebuild Performance (100 property updates, auto-tracking)',
+    results.rebuildPerformance,
+  );
 
   // Summary
   printSummary(results);
@@ -28,7 +46,9 @@ void printBenchmarkResults(BenchmarkResults results) {
 void printSection(String title, Map<String, int> data) {
   if (data.isEmpty) return;
 
-  print('┌───────────────────────────────────────────────────────────────────┐');
+  print(
+    '┌───────────────────────────────────────────────────────────────────┐',
+  );
   print('│ $title');
   print('├─────────────────┬────────────────┬──────────────┬────────────────┤');
   print('│ Framework       │ Time (μs)      │ Time (ms)    │ Relative (%)   │');
@@ -47,24 +67,23 @@ void printSection(String title, Map<String, int> data) {
     final time = entry.value;
     final ms = (time / 1000).toStringAsFixed(2);
     final relative = ((time / fastest) * 100).toStringAsFixed(1);
-    
+
     // Clean up display name - remove suffixes like "(selective)", "Bind.viewModel", "Consumer"
     String displayName = rawName
         .replaceAll(' (selective)', '')
         .replaceAll(' Bind.viewModel', '')
         .replaceAll(' Consumer', '');
-    
+
     // Extract base framework name for emoji
     String baseName = displayName;
     if (displayName.startsWith('Fairy')) {
       baseName = 'Fairy';
-    } else if (displayName.startsWith('Provider')){
+    } else if (displayName.startsWith('Provider')) {
       baseName = 'Provider';
-    }
-    else if (displayName.startsWith('Riverpod')){
+    } else if (displayName.startsWith('Riverpod')) {
       baseName = 'Riverpod';
     }
-    
+
     String emoji;
     switch (baseName) {
       case 'Fairy':
@@ -81,13 +100,11 @@ void printSection(String title, Map<String, int> data) {
     }
 
     String medal = '';
-    if (i == 0){
+    if (i == 0) {
       medal = ' 🥇';
-    }
-    else if (i == 1){
+    } else if (i == 1) {
       medal = ' 🥈';
-    }
-    else if (i == 2){
+    } else if (i == 2) {
       medal = ' 🥉';
     }
 
@@ -105,9 +122,15 @@ void printSection(String title, Map<String, int> data) {
 
 /// Prints summary with medal counts and key insights
 void printSummary(BenchmarkResults results) {
-  print('┌───────────────────────────────────────────────────────────────────┐');
-  print('│ 📊 Summary                                                        │');
-  print('├───────────────────────────────────────────────────────────────────┤');
+  print(
+    '┌───────────────────────────────────────────────────────────────────┐',
+  );
+  print(
+    '│ 📊 Summary                                                        │',
+  );
+  print(
+    '├───────────────────────────────────────────────────────────────────┤',
+  );
 
   // Count medals
   final medals = <String, Map<String, int>>{
@@ -133,7 +156,7 @@ void printSummary(BenchmarkResults results) {
     if (category.isEmpty) continue;
     final sorted = category.entries.toList()
       ..sort((a, b) => a.value.compareTo(b.value));
-    
+
     if (sorted.isNotEmpty) {
       final winner = extractFramework(sorted[0].key);
       medals[winner]!['gold'] = medals[winner]!['gold']! + 1;
@@ -152,7 +175,7 @@ void printSummary(BenchmarkResults results) {
     final name = entry.key;
     final counts = entry.value;
     final total = counts['gold']! + counts['silver']! + counts['bronze']!;
-    
+
     if (total > 0) {
       String emoji;
       switch (name) {
@@ -170,35 +193,52 @@ void printSummary(BenchmarkResults results) {
       }
 
       final nameField = '$emoji $name:'.padRight(18);
-      final medalsStr = '🥇×${counts['gold']} 🥈×${counts['silver']} 🥉×${counts['bronze']}';
+      final medalsStr =
+          '🥇×${counts['gold']} 🥈×${counts['silver']} 🥉×${counts['bronze']}';
       print('│ $nameField $medalsStr');
     }
   }
 
-  print('├───────────────────────────────────────────────────────────────────┤');
-  print('│ 💡 Key Insights:                                                  │');
-  
+  print(
+    '├───────────────────────────────────────────────────────────────────┤',
+  );
+  print(
+    '│ 💡 Key Insights:                                                  │',
+  );
+
   // Calculate Fairy's position
   final fairyWidget = results.widgetPerformance['Fairy'] ?? 0;
   final fairyMemory = results.memoryPerformance['Fairy'] ?? 0;
 
   if (fairyWidget > 0) {
-    final fastestWidget = results.widgetPerformance.values.reduce((a, b) => a < b ? a : b);
+    final fastestWidget = results.widgetPerformance.values.reduce(
+      (a, b) => a < b ? a : b,
+    );
     final diff = ((fairyWidget / fastestWidget - 1) * 100).toStringAsFixed(1);
     if (fairyWidget == fastestWidget) {
-      print('│    • Fairy has the FASTEST widget interaction performance! ⚡    │');
+      print(
+        '│    • Fairy has the FASTEST widget interaction performance! ⚡    │',
+      );
     } else {
-      print('│    • Fairy is within $diff% of fastest for widget interactions        │');
+      print(
+        '│    • Fairy is within $diff% of fastest for widget interactions        │',
+      );
     }
   }
 
   if (fairyMemory > 0) {
-    final fastestMemory = results.memoryPerformance.values.reduce((a, b) => a < b ? a : b);
+    final fastestMemory = results.memoryPerformance.values.reduce(
+      (a, b) => a < b ? a : b,
+    );
     if (fairyMemory == fastestMemory) {
-      print('│    • Fairy has the BEST memory management! 🧠                    │');
+      print(
+        '│    • Fairy has the BEST memory management! 🧠                    │',
+      );
     } else {
       final diff = ((fairyMemory / fastestMemory - 1) * 100).toStringAsFixed(1);
-      print('│    • Fairy memory management within $diff% of best                   │');
+      print(
+        '│    • Fairy memory management within $diff% of best                   │',
+      );
     }
   }
 
@@ -206,33 +246,41 @@ void printSummary(BenchmarkResults results) {
   if (results.selectiveRebuildPerformance.isNotEmpty) {
     final sorted = results.selectiveRebuildPerformance.entries.toList()
       ..sort((a, b) => a.value.compareTo(b.value));
-    
+
     if (sorted.isNotEmpty) {
       final fastest = sorted.first;
       final fastestName = fastest.key;
-      
+
       // Find best selective approach (those with 100% efficiency)
-      final selectiveApproaches = sorted.where((e) => 
-        e.key.contains('selective') || e.key.contains('TWO-WAY')
-      ).toList();
-      
+      final selectiveApproaches = sorted
+          .where(
+            (e) => e.key.contains('selective') || e.key.contains('TWO-WAY'),
+          )
+          .toList();
+
       // Find best global approach (those with ~33% efficiency)
-      final globalApproaches = sorted.where((e) => 
-        e.key.contains('global') || e.key.contains('ONE-WAY')
-      ).toList();
-      
+      final globalApproaches = sorted
+          .where((e) => e.key.contains('global') || e.key.contains('ONE-WAY'))
+          .toList();
+
       if (fastestName.contains('Fairy')) {
-        print('│    • Fairy has the FASTEST rebuild performance! ⚡               │');
+        print(
+          '│    • Fairy has the FASTEST rebuild performance! ⚡               │',
+        );
       }
-      
+
       if (selectiveApproaches.isNotEmpty && globalApproaches.isNotEmpty) {
         final bestSelective = selectiveApproaches.first;
         final bestGlobal = globalApproaches.first;
-        
+
         if (bestGlobal.value < bestSelective.value) {
-          print('│    • Global approach faster despite lower efficiency! 🎯        │');
+          print(
+            '│    • Global approach faster despite lower efficiency! 🎯        │',
+          );
         } else {
-          print('│    • Selective approach provides best rebuild optimization 🎯   │');
+          print(
+            '│    • Selective approach provides best rebuild optimization 🎯   │',
+          );
         }
       }
     }
@@ -240,6 +288,8 @@ void printSummary(BenchmarkResults results) {
 
   print('│    • All frameworks show excellent performance 🚀                │');
   print('│    • Differences are negligible in real-world apps 📱            │');
-  print('└───────────────────────────────────────────────────────────────────┘');
+  print(
+    '└───────────────────────────────────────────────────────────────────┘',
+  );
   print('');
 }

@@ -20,10 +20,11 @@ class FairyCounterWidget extends StatelessWidget {
               ),
               Command<FairyCounterViewModel>(
                 command: (vm) => vm.incrementCommand,
-                builder: (context, execute, canExecute, isRunning) => ElevatedButton(
-                  onPressed: execute,
-                  child: const Text('Increment'),
-                ),
+                builder: (context, execute, canExecute, isRunning) =>
+                    ElevatedButton(
+                      onPressed: execute,
+                      child: const Text('Increment'),
+                    ),
               ),
             ],
           );

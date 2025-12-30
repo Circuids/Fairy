@@ -24,7 +24,7 @@ class FairyMultiPropertyViewModel extends ObservableObject {
     property2 = ObservableProperty(0);
     property3 = ObservableProperty(0);
   }
-  
+
   /// Helper for ONE-WAY binding: triggers global notifications
   void notifyGlobal() => onPropertyChanged();
 }
@@ -54,4 +54,3 @@ class FairyMultiPropertyViewModel3 extends ObservableObject {
     property3 = ObservableProperty(0);
   }
 }
-
