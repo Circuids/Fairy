@@ -1,9 +1,9 @@
 name: fairy
 description: A lightweight MVVM framework for Flutter with strongly-typed, reactive data binding state management library, Mainly focused on simplicity and ease of use.
-version: 2.0.0
-repository: https://github.com/AathifMahir/Fairy
-issue_tracker: https://github.com/AathifMahir/Fairy/issues
-homepage: https://github.com/AathifMahir/Fairy
+version: 2.0.0+1
+repository: https://github.com/Circuids/Fairy
+issue_tracker: https://github.com/Circuids/Fairy/issues
+homepage: https://github.com/Circuids/Fairy
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
