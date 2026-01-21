@@ -1,4 +1,5 @@
 import 'package:fairy/src/core/observable_node.dart';
+import 'package:fairy/src/core/proxy_collections.dart';
 import 'package:fairy/src/internal/dependency_tracker.dart';
 import 'package:fairy/src/utils/equals.dart';
 import 'package:fairy/src/utils/lifecycle.dart';
@@ -244,9 +245,51 @@ abstract class ObservableObject extends ObservableNode with Disposable {
 ///
 /// **Important:** Always use `final` for [ObservableProperty] fields and return
 /// stable references from selectors. Never create new instances in getters.
+///
+/// **Proxy-Based Mutation Notifications:**
+///
+/// For [List], [Map], and [Set] types, [ObservableProperty] automatically wraps
+/// collections in proxies that intercept mutating operations (like `add`, `remove`,
+/// `clear`). This means you don't need to reassign the collection to trigger updates:
+///
+/// ```dart
+/// final items = ObservableProperty<List<String>>([]);
+///
+/// // This automatically triggers a notification!
+/// items.value.add('new item');
+///
+/// // No need to do this anymore:
+/// // items.value = [...items.value, 'new item'];
+/// ```
+///
+/// Disable proxy wrapping for performance-critical scenarios:
+///
+/// ```dart
+/// final items = ObservableProperty<List<String>>([], proxyCollections: false);
+/// // Mutations won't trigger notifications - you must reassign
+/// ```
+///
+/// **For collection types**, use the typed factory constructors for automatic
+/// mutation notifications:
+///
+/// ```dart
+/// // For List - mutations trigger notifications
+/// final items = ObservableProperty.list<String>(['a', 'b']);
+/// items.value.add('c'); // Triggers notification!
+///
+/// // For Map
+/// final settings = ObservableProperty.map<String, int>({'count': 0});
+/// settings.value['count'] = 1; // Triggers notification!
+///
+/// // For Set
+/// final tags = ObservableProperty.set<String>({'admin'});
+/// tags.value.add('user'); // Triggers notification!
+/// ```
 class ObservableProperty<T> extends ObservableNode {
   T _value;
   final bool Function(T? a, T? b)? _deepEquals;
+  // Store the wrapper function for consistent wrapping
+  final T Function(T value, VoidCallback onChange)? _wrapper;
 
   /// Creates an [ObservableProperty] with an initial value.
   ///
@@ -255,19 +298,136 @@ class ObservableProperty<T> extends ObservableNode {
   /// - [deepEquality]: Whether to use deep equality for collections ([List], [Map], [Set]).
   ///   Defaults to `true`. When enabled, collections are compared by contents rather than reference.
   ///
+  /// **Note:** For collection types that need mutation notifications, use the typed
+  /// factory constructors: [ObservableProperty.list], [ObservableProperty.map],
+  /// or [ObservableProperty.set].
+  ///
   /// **Examples:**
   ///
   /// ```dart
-  /// // Basic usage with automatic deep equality for lists
-  /// final tags = ObservableProperty<List<String>>(['admin']);
+  /// // Primitive types
+  /// final count = ObservableProperty<int>(0);
+  /// final name = ObservableProperty<String>('');
   ///
-  /// // Disable deep equality for performance with large collections
-  /// final largeList = ObservableProperty<List<Item>>([], deepEquality: false);
+  /// // For collections with mutation notifications, use typed factories:
+  /// final items = ObservableProperty.list<String>(['a', 'b']);
+  /// items.value.add('c'); // Triggers notification!
   /// ```
   ObservableProperty(
-    this._value, {
+    T initialValue, {
     bool deepEquality = true,
-  }) : _deepEquals = deepEquality ? Equals.deepEquals<T>() : null;
+  })  : _deepEquals = deepEquality ? Equals.deepEquals<T>() : null,
+        _wrapper = null,
+        _value = initialValue;
+
+  /// Internal constructor for typed wrappers.
+  ObservableProperty._withWrapper(
+    T initialValue,
+    this._wrapper, {
+    bool deepEquality = true,
+  })  : _deepEquals = deepEquality ? Equals.deepEquals<T>() : null,
+        _value = initialValue;
+
+  /// Creates an [ObservableProperty] for a [List] with automatic mutation notifications.
+  ///
+  /// The list is wrapped in a proxy that intercepts mutating operations like
+  /// `add`, `remove`, `clear`, and triggers notifications automatically.
+  ///
+  /// **Example:**
+  /// ```dart
+  /// final items = ObservableProperty.list<String>(['a', 'b']);
+  ///
+  /// // Mutations trigger notifications automatically!
+  /// items.value.add('c');      // Notifies listeners
+  /// items.value.remove('a');   // Notifies listeners
+  /// items.value.clear();       // Notifies listeners
+  /// items.value[0] = 'z';      // Notifies listeners
+  /// ```
+  static ObservableProperty<List<E>> list<E>(
+    List<E> initialValue, {
+    bool deepEquality = true,
+  }) {
+    ProxyList<E> wrapper(List<E> value, VoidCallback onChange) {
+      if (value is ProxyList<E>) return value;
+      return ProxyList<E>(value, onChange);
+    }
+
+    final prop = ObservableProperty<List<E>>._withWrapper(
+      initialValue,
+      wrapper,
+      deepEquality: deepEquality,
+    );
+
+    // Wrap the initial value
+    prop._value = wrapper(initialValue, prop.notifyListeners);
+    return prop;
+  }
+
+  /// Creates an [ObservableProperty] for a [Map] with automatic mutation notifications.
+  ///
+  /// The map is wrapped in a proxy that intercepts mutating operations like
+  /// `[]=`, `remove`, `clear`, and triggers notifications automatically.
+  ///
+  /// **Example:**
+  /// ```dart
+  /// final settings = ObservableProperty.map<String, int>({'count': 0});
+  ///
+  /// // Mutations trigger notifications automatically!
+  /// settings.value['count'] = 1;    // Notifies listeners
+  /// settings.value.remove('count'); // Notifies listeners
+  /// settings.value.clear();         // Notifies listeners
+  /// ```
+  static ObservableProperty<Map<K, V>> map<K, V>(
+    Map<K, V> initialValue, {
+    bool deepEquality = true,
+  }) {
+    ProxyMap<K, V> wrapper(Map<K, V> value, VoidCallback onChange) {
+      if (value is ProxyMap<K, V>) return value;
+      return ProxyMap<K, V>(value, onChange);
+    }
+
+    final prop = ObservableProperty<Map<K, V>>._withWrapper(
+      initialValue,
+      wrapper,
+      deepEquality: deepEquality,
+    );
+
+    prop._value = wrapper(initialValue, prop.notifyListeners);
+    return prop;
+  }
+
+  /// Creates an [ObservableProperty] for a [Set] with automatic mutation notifications.
+  ///
+  /// The set is wrapped in a proxy that intercepts mutating operations like
+  /// `add`, `remove`, `clear`, and triggers notifications automatically.
+  ///
+  /// **Example:**
+  /// ```dart
+  /// final tags = ObservableProperty.set<String>({'admin'});
+  ///
+  /// // Mutations trigger notifications automatically!
+  /// tags.value.add('user');    // Notifies listeners
+  /// tags.value.remove('admin'); // Notifies listeners
+  /// tags.value.clear();         // Notifies listeners
+  /// ```
+  static ObservableProperty<Set<E>> set<E>(
+    Set<E> initialValue, {
+    bool deepEquality = true,
+  }) {
+    ProxySet<E> wrapper(Set<E> value, VoidCallback onChange) {
+      if (value is ProxySet<E>) return value;
+      return ProxySet<E>(value, onChange);
+    }
+
+    final prop = ObservableProperty<Set<E>>._withWrapper(
+      initialValue,
+      wrapper,
+      deepEquality: deepEquality,
+    );
+
+    prop._value = wrapper(initialValue, prop.notifyListeners);
+    return prop;
+  }
 
   // ========================================================================
   // HIDDEN ObservableNode API (internal use only)
@@ -304,10 +464,24 @@ class ObservableProperty<T> extends ObservableNode {
   ///
   /// Uses deep equality for collections if [deepEquality] is enabled (default),
   /// otherwise uses `==` comparison.
+  ///
+  /// If this property was created with a typed factory ([ObservableProperty.list],
+  /// [ObservableProperty.map], or [ObservableProperty.set]), new values are
+  /// automatically wrapped in proxies for mutation notifications.
   set value(T newValue) {
-    final isEqual = _deepEquals?.call(_value, newValue) ?? (_value == newValue);
+    // Get the raw value for comparison (unwrap proxy if needed)
+    final currentRaw = _unwrapProxy(_value);
+    final newRaw = _unwrapProxy(newValue);
+
+    final isEqual =
+        _deepEquals?.call(currentRaw, newRaw) ?? (currentRaw == newRaw);
     if (!isEqual) {
-      _value = newValue;
+      // Wrap in proxy if we have a wrapper
+      if (_wrapper != null) {
+        _value = _wrapper!(newValue, super.notifyListeners);
+      } else {
+        _value = newValue;
+      }
       super.notifyListeners();
     }
   }
@@ -324,11 +498,42 @@ class ObservableProperty<T> extends ObservableNode {
   /// ```
   void update(T Function(T current) updater) {
     final newValue = updater(_value);
-    final isEqual = _deepEquals?.call(_value, newValue) ?? (_value == newValue);
+    // Get raw values for comparison
+    final currentRaw = _unwrapProxy(_value);
+    final newRaw = _unwrapProxy(newValue);
+
+    final isEqual =
+        _deepEquals?.call(currentRaw, newRaw) ?? (currentRaw == newRaw);
     if (!isEqual) {
-      _value = newValue;
+      if (_wrapper != null) {
+        _value = _wrapper!(newValue, super.notifyListeners);
+      } else {
+        _value = newValue;
+      }
       super.notifyListeners();
     }
+  }
+
+  // ========================================================================
+  // PROXY UNWRAPPING HELPER (internal)
+  // ========================================================================
+
+  /// Unwraps a proxy to get the underlying collection for comparison.
+
+  T _unwrapProxy(T value) {
+    if (value is ProxyList) {
+      // ignore: invalid_use_of_protected_member
+      return value.inner as T;
+    }
+    if (value is ProxyMap) {
+      // ignore: invalid_use_of_protected_member
+      return value.inner as T;
+    }
+    if (value is ProxySet) {
+      // ignore: invalid_use_of_protected_member
+      return value.inner as T;
+    }
+    return value;
   }
 
   /// Listens to value changes on this property.
