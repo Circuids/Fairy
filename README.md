@@ -20,6 +20,10 @@ A lightweight MVVM framework for Flutter with strongly-typed reactive data bindi
 - [Common Patterns](#common-patterns)
 - [Core Concepts](#core-concepts)
 - [Dependency Injection](#dependency-injection)
+- [Advanced Features](#advanced-features)
+  - [Deep Equality for Collections](#deep-equality-for-collections)
+  - [Collection Mutation Notifications](#collection-mutation-notifications)
+  - [Custom Type Equality](#custom-type-equality)
 - [Best Practices](#best-practices)
 - [Performance](#performance)
 - [Testing](#testing)
@@ -78,8 +82,9 @@ Command<CounterViewModel>(
 
 | Type | Purpose | Auto-Updates | Example |
 |------|---------|--------------|---------|
-| `ObservableProperty<T>` | Mutable reactive state | ✅ | `final name = ObservableProperty<String>('');` |
-| `ComputedProperty<T>` | Derived/calculated values | ✅ | `late final total = ComputedProperty(() => price.value * qty.value, [price, qty], this);` |
+| `ObservableProperty<T>` | Mutable reactive state | ✅ | `final name = ObservableProperty<String>('');` || `ObservableProperty.list<E>()` | List with mutation notifications | ✅ | `final items = ObservableProperty.list<Item>([]);` |
+| `ObservableProperty.map<K,V>()` | Map with mutation notifications | ✅ | `final cache = ObservableProperty.map<String, Data>({});` |
+| `ObservableProperty.set<E>()` | Set with mutation notifications | ✅ | `final tags = ObservableProperty.set<String>({});` || `ComputedProperty<T>` | Derived/calculated values | ✅ | `late final total = ComputedProperty(() => price.value * qty.value, [price, qty], this);` |
 
 ### Command Types
 
@@ -135,11 +140,26 @@ class LoginViewModel extends ObservableObject {
 
 ### List Operations
 
+**Mutable pattern (recommended):**
+```dart
+// Use .list() for in-place mutations
+final todos = ObservableProperty.list<Todo>([]);
+
+late final addCommand = RelayCommandWithParam<String>(
+  (title) => todos.value.add(Todo(title)),  // Direct mutation triggers rebuild
+);
+
+late final deleteCommand = RelayCommandWithParam<String>(
+  (id) => todos.value.removeWhere((t) => t.id == id),  // Direct mutation triggers rebuild
+);
+```
+
+**Immutable pattern (alternative):**
 ```dart
 final todos = ObservableProperty<List<Todo>>([]);
 
 late final addCommand = RelayCommandWithParam<String>(
-  (title) => todos.value = [...todos.value, Todo(title)],
+  (title) => todos.value = [...todos.value, Todo(title)],  // Reassignment triggers rebuild
 );
 
 late final deleteCommand = RelayCommandWithParam<String>(
@@ -431,6 +451,55 @@ class TodoViewModel extends ObservableObject {
 ```
 
 **Disable if needed:** `ObservableProperty<List>([], deepEquality: false)`
+
+### Collection Mutation Notifications
+
+For collections that need UI updates when **mutated in-place** (e.g., `list.add()`, `map['key'] = value`), use the typed factory constructors:
+
+```dart
+class TodoViewModel extends ObservableObject {
+  // Use .list(), .map(), or .set() for in-place mutation support
+  final todos = ObservableProperty.list<Todo>([]);
+  final cache = ObservableProperty.map<String, Todo>({});
+  final tags = ObservableProperty.set<String>({});
+  
+  void addTodo(Todo todo) {
+    todos.value.add(todo);       // ✅ Triggers rebuild automatically!
+    cache.value[todo.id] = todo; // ✅ Triggers rebuild automatically!
+  }
+  
+  void removeTag(String tag) {
+    tags.value.remove(tag);      // ✅ Triggers rebuild automatically!
+  }
+}
+```
+
+**When to use:**
+
+| Pattern | Use Case |
+|---------|----------|
+| `ObservableProperty.list<T>()` | Mutable lists where you add/remove items |
+| `ObservableProperty.map<K,V>()` | Mutable maps where you update entries |
+| `ObservableProperty.set<T>()` | Mutable sets where you add/remove items |
+| `ObservableProperty<List<T>>()` | Immutable pattern with reassignment |
+
+**How it works:** These factory constructors wrap your collection in a transparent proxy that intercepts mutating operations (`add`, `remove`, `clear`, `[]=`, etc.) and triggers notifications automatically. Non-mutating operations (reads, lookups, iterations) have no overhead.
+
+**Smart notifications:** The proxies only notify when changes actually occur:
+- `list[i] = value` - notifies only if value differs
+- `map[key] = value` - notifies only if key is new or value differs  
+- `set.add(item)` - notifies only if item was actually added
+- `clear()` - notifies only if collection was not empty
+
+**Standard pattern still works:**
+```dart
+// Immutable pattern - create new collection each time (still valid)
+final todos = ObservableProperty<List<Todo>>([]);
+
+void addTodo(Todo todo) {
+  todos.value = [...todos.value, todo];  // Reassignment triggers rebuild
+}
+```
 
 ### Custom Type Equality
 
