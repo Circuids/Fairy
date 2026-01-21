@@ -1,3 +1,54 @@
+## 2.1.0
+
+**New Feature** - Collection Mutation Notifications with typed factory constructors.
+
+### ✨ New Features
+
+#### Collection Mutation Notifications
+
+Added typed factory constructors for `ObservableProperty` that enable UI updates when collections are mutated in-place:
+
+```dart
+// List with mutation notifications
+final todos = ObservableProperty.list<Todo>([]);
+todos.value.add(newTodo);       // ✅ Triggers rebuild automatically!
+todos.value.remove(oldTodo);    // ✅ Triggers rebuild automatically!
+
+// Map with mutation notifications
+final cache = ObservableProperty.map<String, Data>({});
+cache.value['key'] = data;      // ✅ Triggers rebuild automatically!
+cache.value.remove('key');      // ✅ Triggers rebuild automatically!
+
+// Set with mutation notifications
+final tags = ObservableProperty.set<String>({});
+tags.value.add('flutter');      // ✅ Triggers rebuild automatically!
+tags.value.remove('dart');      // ✅ Triggers rebuild automatically!
+```
+
+**Key features:**
+- **Smart notifications** - Only triggers when changes actually occur (e.g., `list[i] = value` only notifies if value differs)
+- **Full collection API** - All mutating methods supported: `add`, `remove`, `clear`, `[]= `, `addAll`, `removeWhere`, etc.
+- **Zero read overhead** - Non-mutating operations (reads, lookups, iterations) have no performance impact
+- **Deep equality preserved** - Works seamlessly with existing deep equality feature for reassignments
+
+**New factory constructors:**
+- `ObservableProperty.list<E>(initialValue)` - List with mutation notifications
+- `ObservableProperty.map<K,V>(initialValue)` - Map with mutation notifications
+- `ObservableProperty.set<E>(initialValue)` - Set with mutation notifications
+
+### 📚 Documentation
+
+- Added "Collection Mutation Notifications" section to Advanced Features
+- Updated "List Operations" pattern to show mutable vs immutable patterns
+- Updated Quick Reference table with new factory constructors
+
+### Notes
+
+- Fully backward compatible - existing code works unchanged
+- Standard `ObservableProperty<List<T>>()` constructor still available for immutable patterns
+
+---
+
 ## 2.0.0+1
 
 **Documentation Enhancement** - Improved clarity on change notification APIs and ViewModel testing.
