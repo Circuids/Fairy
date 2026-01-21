@@ -39,7 +39,7 @@ A lightweight MVVM framework for Flutter with strongly-typed reactive data bindi
 
 ```yaml
 dependencies:
-  fairy: ^2.0.0
+  fairy: ^2.1.0+1
 ```
 
 ## Quick Start
