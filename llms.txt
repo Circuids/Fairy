@@ -5,7 +5,7 @@
 ## Package Identity
 
 - **Name**: fairy
-- **Version**: 2.0.0
+- **Version**: 2.1.0
 - **Type**: Flutter state management library
 - **Architecture**: MVVM (Model-View-ViewModel)
 - **License**: BSD-3-Clause
@@ -70,6 +70,30 @@ dispose(); // Clean up listener
 ```
 
 **Important:** Always capture and call the disposer to prevent memory leaks.
+
+**Collection Factory Constructors (v2.1.0):**
+
+For collections that need UI updates when mutated in-place, use typed factory constructors:
+
+```dart
+// List with mutation notifications
+final items = ObservableProperty.list<String>(['a', 'b']);
+items.value.add('c');       // ✅ Triggers notification automatically!
+items.value.remove('a');    // ✅ Triggers notification automatically!
+
+// Map with mutation notifications
+final cache = ObservableProperty.map<String, int>({'count': 0});
+cache.value['count'] = 1;   // ✅ Triggers notification automatically!
+
+// Set with mutation notifications
+final tags = ObservableProperty.set<String>({'admin'});
+tags.value.add('user');     // ✅ Triggers notification automatically!
+```
+
+**Factory Constructors:**
+- `ObservableProperty.list<E>(initialValue)` - List with mutation notifications
+- `ObservableProperty.map<K,V>(initialValue)` - Map with mutation notifications
+- `ObservableProperty.set<E>(initialValue)` - Set with mutation notifications
 
 #### ComputedProperty<T>
 Derived property that automatically updates when dependencies change. **Requires parent parameter for automatic disposal.**
@@ -1020,6 +1044,60 @@ if (equalsFn != null) {
 }
 ```
 
+### Collection Mutation Notifications (v2.1.0)
+
+For collections that need UI updates when **mutated in-place** (e.g., `list.add()`, `map['key'] = value`), use the typed factory constructors:
+
+```dart
+class TodoViewModel extends ObservableObject {
+  // Use .list(), .map(), or .set() for in-place mutation support
+  final todos = ObservableProperty.list<Todo>([]);
+  final cache = ObservableProperty.map<String, Todo>({});
+  final tags = ObservableProperty.set<String>({});
+  
+  void addTodo(Todo todo) {
+    todos.value.add(todo);       // ✅ Triggers rebuild automatically!
+    cache.value[todo.id] = todo; // ✅ Triggers rebuild automatically!
+  }
+  
+  void removeTag(String tag) {
+    tags.value.remove(tag);      // ✅ Triggers rebuild automatically!
+  }
+}
+```
+
+**When to use:**
+
+| Pattern | Use Case |
+|---------|----------|
+| `ObservableProperty.list<T>()` | Mutable lists where you add/remove items |
+| `ObservableProperty.map<K,V>()` | Mutable maps where you update entries |
+| `ObservableProperty.set<T>()` | Mutable sets where you add/remove items |
+| `ObservableProperty<List<T>>()` | Immutable pattern with reassignment |
+
+**How it works:** These factory constructors wrap your collection in a transparent proxy that intercepts mutating operations (`add`, `remove`, `clear`, `[]=`, etc.) and triggers notifications automatically. Non-mutating operations (reads, lookups, iterations) have no overhead.
+
+**Smart notifications:** The proxies only notify when changes actually occur:
+- `list[i] = value` - notifies only if value differs
+- `map[key] = value` - notifies only if key is new or value differs  
+- `set.add(item)` - notifies only if item was actually added
+- `clear()` - notifies only if collection was not empty
+
+**Supported operations:**
+- **List**: `add`, `addAll`, `remove`, `removeAt`, `removeLast`, `removeWhere`, `retainWhere`, `clear`, `[]=`, `length=`, `insert`, `insertAll`, `setAll`, `setRange`, `fillRange`, `replaceRange`, `sort`, `shuffle`
+- **Map**: `[]=`, `remove`, `clear`, `addAll`, `addEntries`, `putIfAbsent`, `update`, `updateAll`, `removeWhere`
+- **Set**: `add`, `addAll`, `remove`, `removeAll`, `removeWhere`, `retainAll`, `retainWhere`, `clear`
+
+**Standard pattern still works:**
+```dart
+// Immutable pattern - create new collection each time (still valid)
+final todos = ObservableProperty<List<Todo>>([]);
+
+void addTodo(Todo todo) {
+  todos.value = [...todos.value, todo];  // Reassignment triggers rebuild
+}
+```
+
 ### Custom Type Equality
 
 **Custom types automatically use their `==` operator** - no special configuration needed. Deep equality only applies to direct `List`, `Map`, and `Set` types.
@@ -1151,7 +1229,7 @@ lib/
 
 - ViewModels are pure Dart classes - easy to unit test
 - Use `FairyScope` in widget tests for integration testing
-- **574 comprehensive tests passing** covering all core functionality:
+- **660 comprehensive tests passing** covering all core functionality:
   - ComputedProperty (with required parent)
   - All command types (sync, async, parameterized)
   - Command auto-tracking in Bind.viewModel
@@ -1161,11 +1239,13 @@ lib/
   - Widget binding and lifecycle (Bind, Command, FairyBridge)
   - Deep nesting scenarios (4-level FairyScope hierarchy)
   - Deep equality for collections (43 tests for recursive equality)
+  - Proxy collection mutation notifications (86 tests)
   - Complex scenarios (nested scopes, inter-VM dependencies)
 
 ## Version History
 
-- **v2.0.0** (Current) - Cleaner API (`bind:` parameter, static `FairyLocator`), command error handling, 574 tests passing
+- **v2.1.0** (Current) - Collection mutation notifications with typed factory constructors, 660 tests passing
+- **v2.0.0** - Cleaner API (`bind:` parameter, static `FairyLocator`), command error handling, 574 tests passing
 - **v1.4.0** - Command auto-tracking in Bind.viewModel, improved benchmark methodology, 565 tests passing
 - **v1.1.2** - Documentation & testing improvements, 443 tests passing
 - **v1.1.1** - Required parent parameter for ComputedProperty (memory leak fix)
