@@ -404,6 +404,50 @@ final vm = Fairy.of<UserViewModel>(context);
 
 **Auto-disposal:** `autoDispose: true` (default) automatically disposes ViewModels when scope is removed from widget tree.
 
+### FairyScopeLocator - Factory Dependency Access
+
+The `FairyScopeLocator` is passed to ViewModel factory callbacks, providing access to **both** global dependencies and scoped ViewModels:
+
+```dart
+FairyScope(
+  viewModel: (locator) => ProfileViewModel(
+    // Access global services from FairyLocator
+    api: locator.get<ApiService>(),
+    db: locator.get<DatabaseService>(),
+    
+    // Access parent scope ViewModels
+    appVM: locator.get<AppViewModel>(),
+  ),
+  child: ProfilePage(),
+)
+```
+
+**Resolution order:**
+1. Current `FairyScope` (for multiple VMs in same scope)
+2. Parent `FairyScope` ancestors (nearest first)
+3. Global `FairyLocator` registrations
+
+**Multiple ViewModels - dependency between them:**
+```dart
+FairyScope(
+  viewModels: [
+    (_) => UserViewModel(),
+    (locator) => SettingsViewModel(
+      // Access UserViewModel from same scope
+      userVM: locator.get<UserViewModel>(),
+    ),
+    (locator) => DashboardViewModel(
+      // Access both from same scope
+      userVM: locator.get<UserViewModel>(),
+      settingsVM: locator.get<SettingsViewModel>(),
+    ),
+  ],
+  child: DashboardPage(),
+)
+```
+
+> **Note:** `FairyScopeLocator` is only valid during ViewModel construction. Do not store or use it outside the factory callback.
+
 ### FairyLocator - Global DI
 
 ```dart
