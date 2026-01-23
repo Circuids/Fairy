@@ -38,15 +38,11 @@ class AsyncTestViewModel extends ObservableObject {
 
 class ParamViewModel extends ObservableObject {
   final canProcess = ObservableProperty<bool>(true);
-  late final RelayCommandWithParam<String> processCommand;
+  late final processCommand = RelayCommand.param<String>(
+    _process,
+    canExecute: (param) => canProcess.value, // Takes parameter
+  );
   String? lastProcessed;
-
-  ParamViewModel() {
-    processCommand = RelayCommandWithParam<String>(
-      _process,
-      canExecute: (param) => canProcess.value, // Takes parameter
-    );
-  }
 
   void _process(String value) {
     lastProcessed = value;
@@ -243,12 +239,12 @@ void main() {
           home: Scaffold(
             body: FairyScope(
               viewModel: (_) => vm,
-              child: CommandWithParam<ParamViewModel, String>(
+              child: Command.param<ParamViewModel, String>(
                 command: (vm) => vm.processCommand,
-                parameter: () => testData, // Required parameter
                 builder: (context, execute, canExecute, isRunning) {
                   return ElevatedButton(
-                    onPressed: canExecute ? execute : null,
+                    onPressed:
+                        canExecute(testData) ? () => execute(testData) : null,
                     child: const Text('Process'),
                   );
                 },
