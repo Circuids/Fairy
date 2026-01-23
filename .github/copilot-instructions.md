@@ -6,11 +6,11 @@ Fairy is a lightweight MVVM framework for Flutter with reactive data binding, co
 
 ## Architecture Layers
 
-1. **Core** (`lib/src/core/`): `ObservableObject`, `ObservableProperty<T>`, `RelayCommand`, `AsyncRelayCommand`, `RelayCommandWithParam<T>`, `AsyncRelayCommandWithParam<T>`, `ComputedProperty<T>`
+1. **Core** (`lib/src/core/`): `ObservableObject`, `ObservableProperty<T>`, `RelayCommand`, `AsyncRelayCommand`, `RelayCommand.param<T>`, `AsyncRelayCommand.param<T>`, `ComputedProperty<T>`
 2. **Locator** (`lib/src/locator/`): `FairyLocator` (global DI), `FairyScope` (scoped DI), `Fairy` (resolver)
 3. **UI** (`lib/src/ui/`): 
-   - **Primary API (Recommended)**: `Bind<TViewModel, TValue>`, `Bind.observer<TViewModel>`, `Command<TViewModel>`, `Command.param<TViewModel, TParam>`
-   - **Advanced API (Public)**: `BindObserver<TViewModel>`, `BindObserver2/3`, `CommandWithParam<TViewModel, TParam>`
+   - **Primary API (Recommended)**: `Bind<TViewModel, TValue>`, `Bind.viewModel<TViewModel>`, `Command<TViewModel>`, `Command.param<TViewModel, TParam>`
+   - **Advanced API (Public)**: `BindViewModel<TViewModel>`, `BindViewModel2/3/4`
 
 ## Key Rules
 
@@ -32,15 +32,16 @@ Fairy is a lightweight MVVM framework for Flutter with reactive data binding, co
 ### Commands
 - `RelayCommand`: Sync actions with optional `canExecute` - use: `RelayCommand(() => action, canExecute: () => condition)`
 - `AsyncRelayCommand`: Async actions - use: `AsyncRelayCommand(() async => action)`
-- `RelayCommandWithParam<T>`: Parameterized commands - use: `RelayCommandWithParam<T>((param) => action)`
-- `AsyncRelayCommandWithParam<T>`: Async parameterized commands - use: `AsyncRelayCommandWithParam<T>((param) async => action)`
+- `RelayCommand.param<T>`: Parameterized commands (preferred) - use: `RelayCommand.param<T>((param) => action, canExecute: (param) => condition)`
+- `AsyncRelayCommand.param<T>`: Async parameterized commands (preferred) - use: `AsyncRelayCommand.param<T>((param) async => action)`
 - Call `notifyCanExecuteChanged()` to re-evaluate `canExecute` after dependency changes
 - Use `canExecuteChanged(listener)` to subscribe to `canExecute` changes (returns disposer function, similar to `propertyChanged()`)
 
 ### UI Widgets (Recommended API)
-- **Data binding**: Use `Bind<TViewModel, TValue>` with explicit selector, or `Bind.observer<TViewModel>` for auto-tracking
+- **Data binding**: Use `Bind<TViewModel, TValue>` with explicit selector, or `Bind.viewModel<TViewModel>` for auto-tracking
 - **Command binding**: Use `Command<TViewModel>` for regular commands, or `Command.param<TViewModel, TParam>` for parameterized commands
-- **Advanced**: `BindObserver`, `BindObserver2/3`, and `CommandWithParam` are public for power users but factories are preferred
+- **Command.param signature**: `builder: (context, execute, canExecute, isRunning)` where `execute(TParam)` and `canExecute(TParam)` take parameters
+- **Advanced**: `BindViewModel`, `BindViewModel2/3/4`, and `CommandWithParam` are public for power users but factories are preferred
 
 ### Memory Management
 - **CRITICAL**: Always capture disposer from `propertyChanged()` and `canExecuteChanged()` calls to avoid memory leaks
