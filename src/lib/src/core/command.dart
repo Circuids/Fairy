@@ -62,6 +62,33 @@ class RelayCommand extends ObservableNode {
         _canExecute = canExecute,
         _onError = onError;
 
+  /// Creates a parameterized command with a typed parameter.
+  ///
+  /// This is the **only** way to create parameterized sync commands.
+  ///
+  /// [execute] receives a parameter of type [TParam] when executed.
+  /// [canExecute] optionally validates whether the action can run with the given parameter.
+  /// [onError] is an optional callback invoked when the action throws an error.
+  ///
+  /// Example:
+  /// ```dart
+  /// late final deleteCommand = RelayCommand.param<String>(
+  ///   (id) => items.removeWhere((item) => item.id == id),
+  ///   canExecute: (id) => id.isNotEmpty,
+  /// );
+  /// ```
+  static RelayCommandWithParam<TParam> param<TParam>(
+    void Function(TParam) execute, {
+    bool Function(TParam)? canExecute,
+    void Function(Object error, StackTrace?)? onError,
+  }) {
+    return RelayCommandWithParam<TParam>(
+      execute,
+      canExecute: canExecute,
+      onError: onError,
+    );
+  }
+
   // ========================================================================
   // HIDDEN ObservableNode API (marked @protected for internal framework use)
   // ========================================================================
@@ -203,6 +230,36 @@ class AsyncRelayCommand extends ObservableNode {
         _canExecute = canExecute,
         _onError = onError;
 
+  /// Creates a parameterized async command with a typed parameter.
+  ///
+  /// This is the **only** way to create parameterized async commands.
+  ///
+  /// [execute] is an async function that receives a parameter of type [TParam].
+  /// [canExecute] optionally validates whether the action can run with the given parameter.
+  /// [onError] is an optional callback invoked when the action throws an error.
+  ///
+  /// While the command is executing, [isRunning] is `true` and [canExecute]
+  /// automatically returns `false` to prevent concurrent execution.
+  ///
+  /// Example:
+  /// ```dart
+  /// late final loadUserCommand = AsyncRelayCommand.param<String>(
+  ///   (userId) async => user.value = await api.fetchUser(userId),
+  ///   canExecute: (userId) => userId.isNotEmpty,
+  /// );
+  /// ```
+  static AsyncRelayCommandWithParam<TParam> param<TParam>(
+    Future<void> Function(TParam) execute, {
+    bool Function(TParam)? canExecute,
+    void Function(Object error, StackTrace?)? onError,
+  }) {
+    return AsyncRelayCommandWithParam<TParam>(
+      execute,
+      canExecute: canExecute,
+      onError: onError,
+    );
+  }
+
   // ========================================================================
   // HIDDEN ObservableNode API (marked @protected for internal framework use)
   // ========================================================================
@@ -303,29 +360,17 @@ class AsyncRelayCommand extends ObservableNode {
 
 /// A command that accepts a typed parameter when executing.
 ///
-/// [RelayCommandWithParam] allows commands to receive input values, useful for
-/// scenarios like item selection, delete operations with IDs, or any action
-/// requiring contextual data.
-///
-/// Example:
+/// **Preferred:** Use [RelayCommand.param] factory method for cleaner syntax:
 /// ```dart
-/// class TodoViewModel extends ObservableObject {
-///   late final ObservableProperty<List<Todo>> todos;
-///   late final RelayCommandWithParam<String> deleteTodoCommand;
+/// late final deleteCommand = RelayCommand.param<String>(
+///   (id) => items.removeWhere((item) => item.id == id),
+///   canExecute: (id) => id.isNotEmpty,
+/// );
+/// ```
 ///
-///   TodoViewModel() {
-///     todos = ObservableProperty<List<Todo>>([]);
-///
-///     deleteTodoCommand = RelayCommandWithParam<String>(
-///       _deleteTodo,
-///       canExecute: (id) => todos.value.any((t) => t.id == id),
-///     );
-///   }
-///
-///   void _deleteTodo(String id) {
-///     todos.value = todos.value.where((t) => t.id != id).toList();
-///   }
-/// }
+/// Direct constructor is also available for explicit type annotations:
+/// ```dart
+/// late final RelayCommandWithParam<String> deleteCommand;
 /// ```
 class RelayCommandWithParam<TParam> extends ObservableNode {
   final void Function(TParam) _action;
@@ -431,17 +476,21 @@ class RelayCommandWithParam<TParam> extends ObservableNode {
 /// execution state. While running, [canExecute] returns `false` to prevent
 /// concurrent execution (double-click prevention).
 ///
+/// **Preferred construction:** Use [AsyncRelayCommand.param] factory method:
+/// ```dart
+/// late final loadUserCommand = AsyncRelayCommand.param<String>(
+///   (userId) async => user.value = await api.fetchUser(userId),
+///   canExecute: (userId) => userId.isNotEmpty,
+/// );
+/// ```
+///
 /// Example:
 /// ```dart
 /// class UserViewModel extends ObservableObject {
-///   late final AsyncRelayCommandWithParam<String> loadUserCommand;
-///
-///   UserViewModel() {
-///     loadUserCommand = AsyncRelayCommandWithParam<String>(
-///       _loadUser,
-///       canExecute: (userId) => userId.isNotEmpty,
-///     );
-///   }
+///   late final loadUserCommand = AsyncRelayCommand.param<String>(
+///     _loadUser,
+///     canExecute: (userId) => userId.isNotEmpty,
+///   );
 ///
 ///   Future<void> _loadUser(String userId) async {
 ///     // isRunning automatically set to true
@@ -453,13 +502,19 @@ class RelayCommandWithParam<TParam> extends ObservableNode {
 ///
 /// // In UI
 /// Command.param<UserViewModel, String>(
-///   command: (vm) => vm.loadUserCommand,
-///   parameter: () => userId,
-///   builder: (context, execute, canExecute, isRunning) {
-///     if (isRunning) return CircularProgressIndicator();
-///     return ElevatedButton(onPressed: execute, child: Text('Load'));
-///   },
-/// )
+/// An async command that accepts a typed parameter when executing.
+///
+/// **Preferred:** Use [AsyncRelayCommand.param] factory method for cleaner syntax:
+/// ```dart
+/// late final loadUserCommand = AsyncRelayCommand.param<String>(
+///   (userId) async => user.value = await api.fetchUser(userId),
+///   canExecute: (userId) => userId.isNotEmpty,
+/// );
+/// ```
+///
+/// Direct constructor is also available for explicit type annotations:
+/// ```dart
+/// late final AsyncRelayCommandWithParam<String> loadCommand;
 /// ```
 class AsyncRelayCommandWithParam<TParam> extends ObservableNode {
   final Future<void> Function(TParam) _action;
