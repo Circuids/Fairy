@@ -25,7 +25,10 @@ class CounterViewModel extends ObservableObject {
   late final RelayCommand incrementCommand;
   late final RelayCommand decrementCommand;
   late final AsyncRelayCommand resetCommand;
-  late final RelayCommandWithParam<int> addValueCommand;
+  late final addValueCommand = RelayCommand.param<int>(
+    _addValue,
+    canExecute: (value) => value > 0 && !isProcessing.value,
+  );
 
   late final VoidCallback _disposeIsProcessingListener;
   late final VoidCallback _disposeCounterListener;
@@ -44,11 +47,6 @@ class CounterViewModel extends ObservableObject {
     );
 
     resetCommand = AsyncRelayCommand(_reset);
-
-    addValueCommand = RelayCommandWithParam<int>(
-      _addValue,
-      canExecute: (value) => value > 0 && !isProcessing.value,
-    );
 
     // When isProcessing changes, refresh commands
     _disposeIsProcessingListener = isProcessing.propertyChanged(() {
@@ -176,13 +174,12 @@ void main() {
                   ),
 
                   // Parameterized Command: Add 5 button
-                  CommandWithParam<CounterViewModel, int>(
+                  Command.param<CounterViewModel, int>(
                     command: (vm) => vm.addValueCommand,
-                    parameter: () => 5,
                     builder: (context, execute, canExecute, isRunning) {
                       return ElevatedButton(
                         key: const Key('add5Btn'),
-                        onPressed: canExecute ? execute : null,
+                        onPressed: canExecute(5) ? () => execute(5) : null,
                         child: const Text('Add 5'),
                       );
                     },
