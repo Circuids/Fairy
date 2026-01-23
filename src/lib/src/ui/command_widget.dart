@@ -247,7 +247,6 @@ class _CommandState<TViewModel extends ObservableObject>
 /// Internal widget that binds a parameterized command to UI.
 ///
 /// Use [Command.param] factory instead of this class directly.
-@internal
 class CommandWithParam<TViewModel extends ObservableObject, TParam>
     extends StatefulWidget {
   const CommandWithParam({
