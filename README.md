@@ -284,6 +284,33 @@ FairyScope(
 final vm = Fairy.of<UserViewModel>(context);
 ```
 
+### FairyScopeLocator - Factory Dependency Access
+
+The `FairyScopeLocator` passed to factory callbacks provides access to **both** global and scoped dependencies:
+
+```dart
+FairyScope(
+  viewModel: (locator) => ProfileViewModel(
+    api: locator.get<ApiService>(),       // Global (FairyLocator)
+    appVM: locator.get<AppViewModel>(),   // Parent scope
+  ),
+  child: ProfilePage(),
+)
+
+// Multiple VMs can depend on each other
+FairyScope(
+  viewModels: [
+    (_) => UserViewModel(),
+    (locator) => SettingsViewModel(
+      userVM: locator.get<UserViewModel>(),  // Same scope
+    ),
+  ],
+  child: DashboardPage(),
+)
+```
+
+**Resolution order:** Current scope → Parent scopes → `FairyLocator`
+
 ### FairyLocator - Global DI
 
 ```dart
