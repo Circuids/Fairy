@@ -19,9 +19,12 @@ class TodoListViewModel extends ObservableObject {
   late final ComputedProperty<int> activeCount;
 
   // Commands
-  late final RelayCommandWithParam<String> addTodoCommand;
-  late final RelayCommandWithParam<String> toggleTodoCommand;
-  late final RelayCommandWithParam<String> deleteTodoCommand;
+  late final addTodoCommand = RelayCommand.param<String>(
+    _addTodo,
+    canExecute: (title) => title.trim().isNotEmpty,
+  );
+  late final toggleTodoCommand = RelayCommand.param<String>(_toggleTodo);
+  late final deleteTodoCommand = RelayCommand.param<String>(_deleteTodo);
   late final RelayCommand clearCompletedCommand;
   late final RelayCommand toggleFilterCommand;
 
@@ -110,14 +113,6 @@ class TodoListViewModel extends ObservableObject {
     );
 
     // Initialize commands
-    addTodoCommand = RelayCommandWithParam<String>(
-      _addTodo,
-      canExecute: (title) => title.trim().isNotEmpty,
-    );
-
-    toggleTodoCommand = RelayCommandWithParam<String>(_toggleTodo);
-    deleteTodoCommand = RelayCommandWithParam<String>(_deleteTodo);
-
     clearCompletedCommand = RelayCommand(
       _clearCompleted,
       canExecute: () => completedCount.value > 0,
