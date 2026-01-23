@@ -506,6 +506,7 @@ class RelayCommandWithParam<TParam> extends ObservableNode {
 ///
 /// **Preferred:** Use [AsyncRelayCommand.param] factory method for cleaner syntax:
 /// ```dart
+// ignore: unintended_html_in_doc_comment
 /// late final loadUserCommand = AsyncRelayCommand.param<String>(
 ///   (userId) async => user.value = await api.fetchUser(userId),
 ///   canExecute: (userId) => userId.isNotEmpty,
@@ -514,6 +515,7 @@ class RelayCommandWithParam<TParam> extends ObservableNode {
 ///
 /// Direct constructor is also available for explicit type annotations:
 /// ```dart
+// ignore: unintended_html_in_doc_comment
 /// late final AsyncRelayCommandWithParam<String> loadCommand;
 /// ```
 class AsyncRelayCommandWithParam<TParam> extends ObservableNode {
