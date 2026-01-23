@@ -334,13 +334,11 @@ class _AddTodoDialog extends StatelessWidget {
               builder: (context, value, _) {
                 return Command.param<TodoListViewModel, String>(
                   command: (vm) => vm.addTodoCommand,
-                  parameter: () => value
-                      .text, // Use the current value from ValueListenableBuilder
                   builder: (context, execute, canExecute, isRunning) {
                     return FilledButton(
-                      onPressed: canExecute
+                      onPressed: canExecute(value.text)
                           ? () {
-                              execute();
+                              execute(value.text);
                               Navigator.pop(context);
                             }
                           : null,

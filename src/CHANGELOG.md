@@ -1,8 +1,158 @@
+## 3.0.0
+
+**V3 Major Release** - Unified Command API with `.param<T>()` factory methods for both widgets and core commands.
+
+### New Features
+
+#### `RelayCommand.param<T>()` and `AsyncRelayCommand.param<T>()` factory methods
+
+Create parameterized commands using a unified API:
+
+```dart
+late final deleteCommand = RelayCommand.param<String>(
+  (id) => items.removeWhere((item) => item.id == id),
+  canExecute: (id) => id.isNotEmpty,
+);
+
+// Async version
+late final loadCommand = AsyncRelayCommand.param<String>(
+  (userId) async => user.value = await api.fetchUser(userId),
+  canExecute: (userId) => userId.isNotEmpty,
+);
+```
+
+### 🔄 Breaking Changes
+
+#### 1. `Command.param<VM, T>()` is now the preferred API for parameterized command widgets
+
+**Migration:** Replace `CommandWithParam<VM, T>()` with `Command.param<VM, T>()` (or continue using `CommandWithParam` directly).
+
+```dart
+// Before (V2)
+CommandWithParam<TodoViewModel, String>(
+  command: (vm) => vm.deleteCommand,
+  parameter: () => todoId,
+  builder: (context, execute, canExecute, isRunning) {
+    return IconButton(
+      onPressed: canExecute ? execute : null,
+      icon: const Icon(Icons.delete),
+    );
+  },
+)
+
+// After (V3)
+Command.param<TodoViewModel, String>(
+  command: (vm) => vm.deleteCommand,
+  builder: (context, execute, canExecute, isRunning) {
+    return IconButton(
+      onPressed: canExecute(todoId) ? () => execute(todoId) : null,
+      icon: const Icon(Icons.delete),
+    );
+  },
+)
+```
+
+#### 2. `Command.param` builder signature changed - `execute` and `canExecute` now take parameters
+
+**Before (V2):**
+- `execute`: `VoidCallback` (no parameters)
+- `canExecute`: `bool` (pre-evaluated)
+- `parameter`: Required callback for providing parameter value
+
+**After (V3):**
+- `execute`: `void Function(TParam)` (pass parameter at call time)
+- `canExecute`: `bool Function(TParam)` (check with specific parameter)
+- `parameter`: **Removed** - no longer needed
+
+This change enables dynamic parameter values from UI callbacks like `SegmentedButton.onSelectionChanged`.
+
+### Why This Change?
+
+The V2 design had a critical flaw: the `parameter` callback was evaluated at **build time**, making it impossible to pass values from UI callbacks:
+
+```dart
+// V2 Problem - Can't pass values from onSelectionChanged!
+SegmentedButton<TabType>(
+  onSelectionChanged: (values) => execute,  // ❌ No way to pass values.first!
+)
+
+// V3 Solution - Pass parameter at execution time
+SegmentedButton<TabType>(
+  onSelectionChanged: (values) => execute(values.first),  // ✅ Works!
+)
+```
+
+### New API
+
+**One widget for all command binding:**
+
+```dart
+// Non-parameterized commands (unchanged)
+Command<MyViewModel>(
+  command: (vm) => vm.saveCommand,
+  builder: (context, execute, canExecute, isRunning) {
+    return ElevatedButton(
+      onPressed: canExecute ? execute : null,
+      child: Text(isRunning ? 'Saving...' : 'Save'),
+    );
+  },
+)
+
+// Parameterized commands (new signature)
+Command.param<TabViewModel, TabType>(
+  command: (vm) => vm.selectTabCommand,
+  builder: (context, execute, canExecute, isRunning) {
+    final vm = Fairy.of<TabViewModel>(context);
+    return SegmentedButton<TabType>(
+      segments: [...],
+      selected: {vm.selectedTab.value},
+      onSelectionChanged: (values) => execute(values.first),  // ✅ Dynamic!
+    );
+  },
+)
+```
+
+### API Comparison
+
+| Aspect | V2 | V3 |
+|--------|-----|-----|
+| **Widgets** | `Command`, `CommandWithParam` | `Command`, `Command.param` |
+| **Commands** | `RelayCommand`, `RelayCommandWithParam` | `RelayCommand`, `RelayCommand.param` |
+| **Async Commands** | `AsyncRelayCommand`, `AsyncRelayCommandWithParam` | `AsyncRelayCommand`, `AsyncRelayCommand.param` |
+| Param builder `execute` | `VoidCallback` | `void Function(TParam)` |
+| Param builder `canExecute` | `bool` | `bool Function(TParam)` |
+| `parameter` callback | Required | Removed |
+| Dynamic UI values | ❌ Impossible | ✅ Supported |
+
+### Testing
+
+- **667 tests** passing
+- Added 7 tests for new `.param<T>()` factory methods
+- All parameterized command tests updated for new API
+- Integration tests validated
+
+### 💡 Migration Effort
+
+**Small projects:** 5-10 minutes  
+**Medium projects:** 15-20 minutes  
+**Large projects:** 20-30 minutes
+
+**Migration steps:**
+1. Replace `CommandWithParam<VM, T>(...)` → `Command.param<VM, T>(...)`
+2. Remove `parameter:` argument from Command.param
+3. Update builder: change `canExecute` usage from `canExecute` to `canExecute(param)`
+4. Update builder: change `execute` usage from `execute` to `() => execute(param)`
+5. (Optional) Migrate to factory methods: `RelayCommandWithParam<T>` → `RelayCommand.param<T>`
+4. Update builder: change `execute` usage from `execute` to `() => execute(param)`
+5. Test thoroughly
+
+---
+
 ## 2.1.0
 
 **New Feature** - Collection Mutation Notifications with typed factory constructors.
 
-### ✨ New Features
+###  New Features
 
 #### Collection Mutation Notifications
 
@@ -36,7 +186,7 @@ tags.value.remove('dart');      // ✅ Triggers rebuild automatically!
 - `ObservableProperty.map<K,V>(initialValue)` - Map with mutation notifications
 - `ObservableProperty.set<E>(initialValue)` - Set with mutation notifications
 
-### 📚 Documentation
+### Documentation
 
 - Added "Collection Mutation Notifications" section to Advanced Features
 - Updated "List Operations" pattern to show mutable vs immutable patterns
@@ -53,7 +203,7 @@ tags.value.remove('dart');      // ✅ Triggers rebuild automatically!
 
 **Documentation Enhancement** - Improved clarity on change notification APIs and ViewModel testing.
 
-### 📚 Documentation
+### Documentation
 
 #### Change Notification APIs - Clarified Isolation
 - **Rewrote Core Concepts section** to properly explain notification isolation between observable types
@@ -121,7 +271,7 @@ final api = FairyLocator.get<ApiService>();
 
 **All methods are now static:** `registerSingleton`, `registerLazySingleton`, `registerFactory`, `get`, `isRegistered`, `unregister`, `reset`.
 
-### ✨ New Features
+### New Features
 
 #### Command Error Handling with `onError` Callback
 
@@ -161,7 +311,7 @@ Bind<LoginViewModel, String?>(
 - Optional callback - only add when needed
 - Available on: `RelayCommand`, `AsyncRelayCommand`, `RelayCommandWithParam<T>`, `AsyncRelayCommandWithParam<T>`
 
-### 🎯 Design Decisions
+### Design Decisions
 
 #### Why No `context.watch<T>()` or `ref.watch<T>()` Style Extensions?
 
@@ -174,20 +324,20 @@ Bind<LoginViewModel, String?>(
 
 **For imperative access** (e.g., calling commands in callbacks), `Fairy.of<T>(context)` provides read-only ViewModel access. For overlays, use `FairyBridge` widget.
 
-### 📚 Documentation
+### Documentation
 
 - Added comprehensive command error handling examples (basic, type-safe, snackbar patterns)
 - Updated Quick Reference table with error handling capabilities
 - Updated all examples to use V2 API (`bind:` parameter, static `FairyLocator`)
 - Enhanced Common Patterns section with error handling integration
 
-### 🧪 Testing
+### Testing
 
 - **574 tests** passing (up from 565 in v1.4.0)
 - Added 9 tests for command error handling scenarios
 - All breaking changes validated with updated tests
 
-### 📊 Performance
+### Performance
 
 - Benchmarks updated with V2 measurements
 - Performance characteristics maintained from v1.4.0

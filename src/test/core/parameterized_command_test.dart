@@ -2,11 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fairy/src/core/command.dart';
 
 void main() {
-  group('RelayCommandWithParam<TParam>', () {
+  group('RelayCommand.param<TParam>', () {
     group('initialization', () {
       test('should create command with action only', () {
         var executedWith = '';
-        final command = RelayCommandWithParam<String>((param) {
+        final command = RelayCommand.param<String>((param) {
           executedWith = param;
         });
 
@@ -20,7 +20,7 @@ void main() {
 
       test('should create command with action and canExecute', () {
         var executedWith = 0;
-        final command = RelayCommandWithParam<int>(
+        final command = RelayCommand.param<int>(
           (param) => executedWith = param,
           canExecute: (param) => param > 0,
         );
@@ -35,7 +35,7 @@ void main() {
       });
 
       test('should default canExecute to true when not provided', () {
-        final command = RelayCommandWithParam<String>((param) {});
+        final command = RelayCommand.param<String>((param) {});
 
         expect(command.canExecute('any'), isTrue);
         expect(command.canExecute('value'), isTrue);
@@ -47,7 +47,7 @@ void main() {
     group('execute()', () {
       test('should execute action with parameter when canExecute is true', () {
         var executedWith = '';
-        final command = RelayCommandWithParam<String>((param) {
+        final command = RelayCommand.param<String>((param) {
           executedWith = param;
         });
 
@@ -62,7 +62,7 @@ void main() {
 
       test('should NOT execute action when canExecute is false', () {
         var executeCount = 0;
-        final command = RelayCommandWithParam<int>(
+        final command = RelayCommand.param<int>(
           (param) => executeCount++,
           canExecute: (param) => param > 0,
         );
@@ -80,7 +80,7 @@ void main() {
 
       test('should pass parameter correctly to action', () {
         final capturedParams = <String>[];
-        final command = RelayCommandWithParam<String>((param) {
+        final command = RelayCommand.param<String>((param) {
           capturedParams.add(param);
         });
 
@@ -94,7 +94,7 @@ void main() {
       });
 
       test('should handle exceptions in action', () {
-        final command = RelayCommandWithParam<String>((param) {
+        final command = RelayCommand.param<String>((param) {
           throw Exception('Error: $param');
         });
 
@@ -106,7 +106,7 @@ void main() {
 
     group('canExecute()', () {
       test('should return true when no predicate provided', () {
-        final command = RelayCommandWithParam<int>((param) {});
+        final command = RelayCommand.param<int>((param) {});
 
         expect(command.canExecute(0), isTrue);
         expect(command.canExecute(100), isTrue);
@@ -116,7 +116,7 @@ void main() {
       });
 
       test('should evaluate predicate with parameter', () {
-        final command = RelayCommandWithParam<int>(
+        final command = RelayCommand.param<int>(
           (param) {},
           canExecute: (param) => param > 0 && param < 100,
         );
@@ -133,7 +133,7 @@ void main() {
 
       test('should re-evaluate predicate on each call', () {
         var threshold = 10;
-        final command = RelayCommandWithParam<int>(
+        final command = RelayCommand.param<int>(
           (param) {},
           canExecute: (param) => param > threshold,
         );
@@ -150,7 +150,7 @@ void main() {
 
       test('should work with complex validation logic', () {
         final validIds = {'id1', 'id2', 'id3'};
-        final command = RelayCommandWithParam<String>(
+        final command = RelayCommand.param<String>(
           (param) {},
           canExecute: (param) => validIds.contains(param),
         );
@@ -166,7 +166,7 @@ void main() {
     group('type safety', () {
       test('should enforce type safety with String parameter', () {
         final capturedParams = <String>[];
-        final command = RelayCommandWithParam<String>((param) {
+        final command = RelayCommand.param<String>((param) {
           capturedParams.add(param);
         });
 
@@ -180,7 +180,7 @@ void main() {
 
       test('should enforce type safety with int parameter', () {
         final capturedParams = <int>[];
-        final command = RelayCommandWithParam<int>((param) {
+        final command = RelayCommand.param<int>((param) {
           capturedParams.add(param);
         });
 
@@ -195,7 +195,7 @@ void main() {
 
       test('should work with custom types', () {
         final capturedUsers = <User>[];
-        final command = RelayCommandWithParam<User>((param) {
+        final command = RelayCommand.param<User>((param) {
           capturedUsers.add(param);
         });
 
@@ -214,7 +214,7 @@ void main() {
 
       test('should work with nullable types', () {
         final capturedParams = <String?>[];
-        final command = RelayCommandWithParam<String?>((param) {
+        final command = RelayCommand.param<String?>((param) {
           capturedParams.add(param);
         });
 
@@ -231,7 +231,7 @@ void main() {
     group('refresh()', () {
       test('should notify listeners when refresh is called', () {
         var notificationCount = 0;
-        final command = RelayCommandWithParam<String>((param) {});
+        final command = RelayCommand.param<String>((param) {});
 
         command.canExecuteChanged(() => notificationCount++);
 
@@ -248,7 +248,7 @@ void main() {
         var validIds = <String>{'id1', 'id2'};
         final canExecuteResults = <bool>[];
 
-        final command = RelayCommandWithParam<String>(
+        final command = RelayCommand.param<String>(
           (param) {},
           canExecute: (param) => validIds.contains(param),
         );
@@ -271,7 +271,7 @@ void main() {
 
     group('listener management', () {
       test('should support multiple listeners', () {
-        final command = RelayCommandWithParam<int>((param) {});
+        final command = RelayCommand.param<int>((param) {});
         final callOrder = <int>[];
 
         command.canExecuteChanged(() => callOrder.add(1));
@@ -287,7 +287,7 @@ void main() {
 
       test('should not notify removed listeners', () {
         var notificationCount = 0;
-        final command = RelayCommandWithParam<String>((param) {});
+        final command = RelayCommand.param<String>((param) {});
 
         void listener() {
           notificationCount++;
@@ -307,7 +307,7 @@ void main() {
 
     group('disposal', () {
       test('should not notify after disposal', () {
-        final command = RelayCommandWithParam<int>((param) {});
+        final command = RelayCommand.param<int>((param) {});
         var notificationCount = 0;
 
         command.canExecuteChanged(() => notificationCount++);
@@ -348,11 +348,11 @@ void main() {
     });
   });
 
-  group('AsyncRelayCommandWithParam<TParam>', () {
+  group('AsyncRelayCommand.param<TParam>', () {
     group('initialization', () {
       test('should create async command with action only', () async {
         var executedWith = '';
-        final command = AsyncRelayCommandWithParam<String>((param) async {
+        final command = AsyncRelayCommand.param<String>((param) async {
           executedWith = param;
         });
 
@@ -366,7 +366,7 @@ void main() {
 
       test('should create async command with action and canExecute', () async {
         var executedWith = 0;
-        final command = AsyncRelayCommandWithParam<int>(
+        final command = AsyncRelayCommand.param<int>(
           (param) async => executedWith = param,
           canExecute: (param) => param > 0,
         );
@@ -381,7 +381,7 @@ void main() {
       });
 
       test('should default canExecute to true when not provided', () {
-        final command = AsyncRelayCommandWithParam<String>((param) async {});
+        final command = AsyncRelayCommand.param<String>((param) async {});
 
         expect(command.canExecute('any'), isTrue);
 
@@ -392,7 +392,7 @@ void main() {
     group('execute()', () {
       test('should execute async action with parameter', () async {
         var executedWith = '';
-        final command = AsyncRelayCommandWithParam<String>((param) async {
+        final command = AsyncRelayCommand.param<String>((param) async {
           await Future<void>.delayed(const Duration(milliseconds: 10));
           executedWith = param;
         });
@@ -408,7 +408,7 @@ void main() {
 
       test('should NOT execute when canExecute is false', () async {
         var executeCount = 0;
-        final command = AsyncRelayCommandWithParam<int>(
+        final command = AsyncRelayCommand.param<int>(
           (param) async => executeCount++,
           canExecute: (param) => param > 0,
         );
@@ -423,7 +423,7 @@ void main() {
       });
 
       test('should handle exceptions gracefully', () async {
-        final command = AsyncRelayCommandWithParam<String>((param) async {
+        final command = AsyncRelayCommand.param<String>((param) async {
           throw Exception('Error: $param');
         });
 
@@ -447,7 +447,7 @@ void main() {
           'should prevent concurrent execution (automatic re-entry prevention)',
           () async {
         var executionCount = 0;
-        final command = AsyncRelayCommandWithParam<String>((param) async {
+        final command = AsyncRelayCommand.param<String>((param) async {
           executionCount++;
           await Future<void>.delayed(const Duration(milliseconds: 50));
         });
@@ -469,7 +469,7 @@ void main() {
         var executionCount = 0;
         final capturedParams = <int>[];
 
-        final command = AsyncRelayCommandWithParam<int>((param) async {
+        final command = AsyncRelayCommand.param<int>((param) async {
           executionCount++;
           capturedParams.add(param);
           await Future<void>.delayed(const Duration(milliseconds: 10));
@@ -493,7 +493,7 @@ void main() {
     group('type safety', () {
       test('should enforce type safety with typed parameters', () async {
         final capturedParams = <User>[];
-        final command = AsyncRelayCommandWithParam<User>((param) async {
+        final command = AsyncRelayCommand.param<User>((param) async {
           await Future<void>.delayed(const Duration(milliseconds: 5));
           capturedParams.add(param);
         });
@@ -512,7 +512,7 @@ void main() {
     group('refresh()', () {
       test('should notify listeners when refresh is called', () {
         var notificationCount = 0;
-        final command = AsyncRelayCommandWithParam<String>((param) async {});
+        final command = AsyncRelayCommand.param<String>((param) async {});
 
         command.canExecuteChanged(() => notificationCount++);
 
@@ -527,7 +527,7 @@ void main() {
 
       test('should be used to update canExecute state', () {
         var threshold = 10;
-        final command = AsyncRelayCommandWithParam<int>(
+        final command = AsyncRelayCommand.param<int>(
           (param) async {},
           canExecute: (param) => param > threshold,
         );
@@ -547,7 +547,7 @@ void main() {
 
     group('disposal', () {
       test('should not notify after disposal', () {
-        final command = AsyncRelayCommandWithParam<int>((param) async {});
+        final command = AsyncRelayCommand.param<int>((param) async {});
         var notificationCount = 0;
 
         command.canExecuteChanged(() => notificationCount++);
@@ -578,7 +578,7 @@ void main() {
 
       test('should handle rapid execute attempts correctly', () async {
         var executionCount = 0;
-        final command = AsyncRelayCommandWithParam<String>((param) async {
+        final command = AsyncRelayCommand.param<String>((param) async {
           executionCount++;
           await Future<void>.delayed(const Duration(milliseconds: 20));
         });
@@ -596,6 +596,133 @@ void main() {
 
         command.dispose();
       });
+    });
+  });
+
+  // Tests for .param<T>() factory methods (v3.0.0)
+  group('RelayCommand.param<T>() factory', () {
+    test('should create parameterized sync command via factory method', () {
+      var executedWith = '';
+      final command = RelayCommand.param<String>(
+        (id) => executedWith = id,
+        canExecute: (id) => id.isNotEmpty,
+      );
+
+      // Test functionality - parameterized commands accept typed parameters
+      expect(command.canExecute('test'), isTrue);
+      expect(command.canExecute(''), isFalse);
+
+      command.execute('hello');
+      expect(executedWith, 'hello');
+
+      command.dispose();
+    });
+
+    test('should support onError callback', () {
+      Object? caughtError;
+      final command = RelayCommand.param<String>(
+        (id) => throw Exception('Test error'),
+        onError: (error, stackTrace) => caughtError = error,
+      );
+
+      command.execute('test');
+      expect(caughtError, isA<Exception>());
+
+      command.dispose();
+    });
+
+    test('should work in ViewModel pattern', () {
+      final vm = _ParamFactoryTestViewModel();
+
+      expect(vm.deleteCommand.canExecute('item1'), isTrue);
+      expect(vm.deleteCommand.canExecute(''), isFalse);
+
+      vm.deleteCommand.execute('item123');
+      expect(vm.executedWith, 'item123');
+
+      vm.dispose();
+    });
+  });
+
+  group('AsyncRelayCommand.param<T>() factory', () {
+    test('should create parameterized async command via factory method',
+        () async {
+      var executedWith = '';
+      final command = AsyncRelayCommand.param<String>(
+        (id) async {
+          await Future<void>.delayed(const Duration(milliseconds: 5));
+          executedWith = id;
+        },
+        canExecute: (id) => id.isNotEmpty,
+      );
+
+      // Test functionality - parameterized async commands accept typed parameters
+      expect(command.canExecute('test'), isTrue);
+      expect(command.canExecute(''), isFalse);
+      expect(command.isRunning, isFalse);
+
+      final future = command.execute('async-hello');
+      expect(command.isRunning, isTrue);
+
+      await future;
+      expect(command.isRunning, isFalse);
+      expect(executedWith, 'async-hello');
+
+      command.dispose();
+    });
+
+    test('should support onError callback', () async {
+      Object? caughtError;
+      final command = AsyncRelayCommand.param<String>(
+        (id) async => throw Exception('Async test error'),
+        onError: (error, stackTrace) => caughtError = error,
+      );
+
+      await command.execute('test');
+      expect(caughtError, isA<Exception>());
+
+      command.dispose();
+    });
+
+    test('should work in ViewModel pattern', () async {
+      final vm = _ParamFactoryTestViewModel();
+
+      expect(vm.loadCommand.canExecute('user1'), isTrue);
+      expect(vm.loadCommand.canExecute(''), isFalse);
+      expect(vm.loadCommand.isRunning, isFalse);
+
+      final future = vm.loadCommand.execute('user456');
+      expect(vm.loadCommand.isRunning, isTrue);
+
+      await future;
+      expect(vm.loadCommand.isRunning, isFalse);
+      expect(vm.asyncExecutedWith, 'user456');
+
+      vm.dispose();
+    });
+
+    test('should prevent concurrent execution', () async {
+      var executionCount = 0;
+      final command = AsyncRelayCommand.param<String>(
+        (id) async {
+          executionCount++;
+          await Future<void>.delayed(const Duration(milliseconds: 20));
+        },
+      );
+
+      // Start first execution
+      final future1 = command.execute('first');
+      expect(command.isRunning, isTrue);
+
+      // Try to start second execution while first is running
+      final future2 = command.execute('second');
+
+      await Future.wait([future1, future2]);
+
+      // Only first execution should have run
+      expect(executionCount, equals(1));
+
+      command.dispose();
     });
   });
 }
@@ -618,14 +745,10 @@ class Todo {
 
 class TodoViewModel {
   final todos = <Todo>[];
-  late final RelayCommandWithParam<String> deleteCommand;
-
-  TodoViewModel() {
-    deleteCommand = RelayCommandWithParam<String>(
-      _deleteTodo,
-      canExecute: (id) => todos.any((t) => t.id == id),
-    );
-  }
+  late final deleteCommand = RelayCommand.param<String>(
+    _deleteTodo,
+    canExecute: (id) => todos.any((t) => t.id == id),
+  );
 
   void addTodo(String id, String title) {
     todos.add(Todo(id, title));
@@ -642,11 +765,7 @@ class TodoViewModel {
 
 class AsyncUserViewModel {
   User? currentUser;
-  late final AsyncRelayCommandWithParam<String> loadUserCommand;
-
-  AsyncUserViewModel() {
-    loadUserCommand = AsyncRelayCommandWithParam<String>(_loadUser);
-  }
+  late final loadUserCommand = AsyncRelayCommand.param<String>(_loadUser);
 
   Future<void> _loadUser(String userId) async {
     await Future<void>.delayed(const Duration(milliseconds: 10));
@@ -655,5 +774,28 @@ class AsyncUserViewModel {
 
   void dispose() {
     loadUserCommand.dispose();
+  }
+}
+
+/// Tests for the .param<T>() factory methods introduced in v3.0.0
+class _ParamFactoryTestViewModel {
+  var executedWith = '';
+  late final deleteCommand = RelayCommand.param<String>(
+    (id) => executedWith = id,
+    canExecute: (id) => id.isNotEmpty,
+  );
+
+  var asyncExecutedWith = '';
+  late final loadCommand = AsyncRelayCommand.param<String>(
+    (id) async {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+      asyncExecutedWith = id;
+    },
+    canExecute: (id) => id.isNotEmpty,
+  );
+
+  void dispose() {
+    deleteCommand.dispose();
+    loadCommand.dispose();
   }
 }

@@ -62,16 +62,14 @@ class AsyncCommandTrackingViewModel extends ObservableObject {
 
 class ParamCommandTrackingViewModel extends ObservableObject {
   final allowedIds = ObservableProperty<Set<String>>({});
-  late final RelayCommandWithParam<String> deleteCommand;
+  late final deleteCommand = RelayCommand.param<String>(
+    _delete,
+    canExecute: (id) => allowedIds.value.contains(id),
+  );
   late final VoidCallback _disposer;
   String? lastDeleted;
 
   ParamCommandTrackingViewModel() {
-    deleteCommand = RelayCommandWithParam<String>(
-      _delete,
-      canExecute: (id) => allowedIds.value.contains(id),
-    );
-
     _disposer = allowedIds.propertyChanged(() {
       deleteCommand.notifyCanExecuteChanged();
     });
@@ -90,16 +88,14 @@ class ParamCommandTrackingViewModel extends ObservableObject {
 
 class AsyncParamCommandTrackingViewModel extends ObservableObject {
   final processing = ObservableProperty<bool>(false);
-  late final AsyncRelayCommandWithParam<int> processCommand;
+  late final processCommand = AsyncRelayCommand.param<int>(
+    _process,
+    canExecute: (value) => !processing.value && value > 0,
+  );
   late final VoidCallback _disposer;
   int? lastProcessed;
 
   AsyncParamCommandTrackingViewModel() {
-    processCommand = AsyncRelayCommandWithParam<int>(
-      _process,
-      canExecute: (value) => !processing.value && value > 0,
-    );
-
     _disposer = processing.propertyChanged(() {
       processCommand.notifyCanExecuteChanged();
     });
@@ -232,7 +228,7 @@ void main() {
     });
 
     testWidgets(
-        'RelayCommandWithParam.canExecute should trigger rebuild when accessed in Bind.viewModel',
+        'RelayCommand.param canExecute should trigger rebuild when accessed in Bind.viewModel',
         (tester) async {
       final vm = ParamCommandTrackingViewModel();
       int buildCount = 0;
@@ -285,7 +281,7 @@ void main() {
     });
 
     testWidgets(
-        'AsyncRelayCommandWithParam.canExecute should trigger rebuild when accessed in Bind.viewModel',
+        'AsyncRelayCommand.param canExecute should trigger rebuild when accessed in Bind.viewModel',
         (tester) async {
       final vm = AsyncParamCommandTrackingViewModel();
       int buildCount = 0;
