@@ -5,7 +5,7 @@
 ## Package Identity
 
 - **Name**: fairy
-- **Version**: 2.1.0
+- **Version**: 3.0.0
 - **Type**: Flutter state management library
 - **Architecture**: MVVM (Model-View-ViewModel)
 - **License**: BSD-3-Clause
@@ -154,23 +154,32 @@ Future<void> _fetchData() async {
 - `bool isRunning` - Tracks execution state
 - `canExecute` returns false while `isRunning` is true (prevents double-clicks)
 
-#### RelayCommandWithParam<T>
-Parameterized synchronous command.
+#### RelayCommand.param<T> (v3.0.0)
+Parameterized synchronous command. **Factory method is preferred, but class is also exported.**
 
 ```dart
-late final deleteCommand = RelayCommandWithParam<String>(
+// Preferred - factory method
+late final deleteCommand = RelayCommand.param<String>(
   (id) => _deleteItem(id),
   canExecute: (id) => items.any((item) => item.id == id),
 );
+
+// Also available - direct constructor (useful for type annotations)
+late final RelayCommandWithParam<String> deleteCommand = RelayCommandWithParam<String>(...);
 ```
 
-#### AsyncRelayCommandWithParam<T>
-Parameterized asynchronous command with automatic `isRunning` state.
+#### AsyncRelayCommand.param<T> (v3.0.0)
+Parameterized asynchronous command with automatic `isRunning` state. **Factory method is preferred, but class is also exported.**
 
 ```dart
-late final fetchItemCommand = AsyncRelayCommandWithParam<String>(
+// Preferred - factory method
+late final fetchItemCommand = AsyncRelayCommand.param<String>(
   (id) async => await api.getItem(id),
+  canExecute: (id) => id.isNotEmpty,
 );
+
+// Also available - direct constructor (useful for type annotations)
+late final AsyncRelayCommandWithParam<String> fetchCommand = AsyncRelayCommandWithParam<String>(...);
 ```
 
 **Key Properties:**
@@ -352,52 +361,58 @@ Widget Function(
 - No manual state management
 
 #### Command.param<TViewModel, TParam>
-Command binding for parameterized commands. Parameter is a function for reactive evaluation.
+Command binding for parameterized commands. **v3.0.0**: Both `execute` and `canExecute` take the parameter directly, enabling dynamic values from UI callbacks.
 
 ```dart
+// Dynamic value from UI callback (e.g., SegmentedButton)
+Command.param<MyViewModel, Mode>(
+  command: (vm) => vm.selectModeCommand,
+  builder: (context, execute, canExecute, isRunning) => SegmentedButton<Mode>(
+    segments: Mode.values.map((m) => ButtonSegment(value: m, label: Text(m.name))).toList(),
+    selected: {currentMode},
+    onSelectionChanged: (selection) => execute(selection.first), // Pass value directly!
+  ),
+)
+
+// Known value at build time (e.g., delete button in list)
 Command.param<TodoViewModel, String>(
   command: (vm) => vm.deleteCommand,
-  parameter: () => todoId,  // Function evaluated on rebuild
   builder: (context, execute, canExecute, isRunning) {
     return IconButton(
-      onPressed: canExecute ? execute : null,
+      onPressed: canExecute(item.id) ? () => execute(item.id) : null,
       icon: Icon(Icons.delete),
     );
   },
 )
 ```
 
-**For reactive parameters from controllers:**
-```dart
-Bind<TodoViewModel, TextEditingController>(
-  bind: (vm) => vm.titleController,
-  builder: (context, controller, _) {
-    return ValueListenableBuilder<TextEditingValue>(
-      valueListenable: controller,
-      builder: (context, value, _) {
-        return Command.param<TodoViewModel, String>(
-          command: (vm) => vm.addCommand,
-          parameter: () => value.text,  // Reactive to text changes
-          builder: (context, execute, canExecute, isRunning) {
-            return ElevatedButton(
-              onPressed: canExecute ? execute : null,
-              child: Text('Add'),
-            );
-          },
-        );
-      },
-    );
-  },
-)
-```
-
-**Builder Signature:**
+**Builder Signature (v3.0.0):**
 ```dart
 Widget Function(
   BuildContext context,
-  VoidCallback execute,     // Executes command with current parameter
-  bool canExecute,          // Can the command run with current parameter?
-  bool isRunning,           // Is async command running? (false for sync)
+  void Function(TParam) execute,    // Execute with parameter
+  bool Function(TParam) canExecute, // Check if can execute with parameter
+  bool isRunning,                   // Is async command running?
+) builder;
+```
+
+**Migration from v2.x:**
+```dart
+// v2.x (old - parameter callback, execute takes no args)
+Command.param<VM, String>(
+  command: (vm) => vm.command,
+  parameter: () => item.id,  // ❌ Removed in v3.0.0
+  builder: (context, execute, canExecute, isRunning) =>
+    ElevatedButton(onPressed: canExecute ? execute : null, child: Text('Go')),
+)
+
+// v3.0.0 (new - execute and canExecute take parameter)
+Command.param<VM, String>(
+  command: (vm) => vm.command,
+  builder: (context, execute, canExecute, isRunning) =>
+    ElevatedButton(onPressed: canExecute(item.id) ? () => execute(item.id) : null, child: Text('Go')),
+)
+```
 ) builder;
 ```
 
@@ -685,10 +700,9 @@ void _showAddTodoDialog(BuildContext context) {
         actions: [
           Command.param<TodoViewModel, String>(
             command: (vm) => vm.addCommand,
-            parameter: () => titleText,
             builder: (context, execute, canExecute, isRunning) {
               return TextButton(
-                onPressed: canExecute ? execute : null,
+                onPressed: canExecute(titleText) ? () => execute(titleText) : null,
                 child: Text('Add'),
               );
             },
@@ -1244,7 +1258,8 @@ lib/
 
 ## Version History
 
-- **v2.1.0** (Current) - Collection mutation notifications with typed factory constructors, 660 tests passing
+- **v3.0.0** (Current) - Unified Command API: `RelayCommand.param<T>()` and `AsyncRelayCommand.param<T>()` factory methods (preferred), `Command.param` widget with `execute(TParam)` and `canExecute(TParam)`, 667 tests passing
+- **v2.1.0** - Collection mutation notifications with typed factory constructors, 660 tests passing
 - **v2.0.0** - Cleaner API (`bind:` parameter, static `FairyLocator`), command error handling, 574 tests passing
 - **v1.4.0** - Command auto-tracking in Bind.viewModel, improved benchmark methodology, 565 tests passing
 - **v1.1.2** - Documentation & testing improvements, 443 tests passing
