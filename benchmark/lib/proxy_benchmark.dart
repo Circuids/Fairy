@@ -46,7 +46,8 @@ void main() {
             stopwatch.elapsedMicroseconds / iterations;
 
         print(
-            'Plain List add(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['List_Baseline_Add']!.toStringAsFixed(4)}µs/op)');
+          'Plain List add(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['List_Baseline_Add']!.toStringAsFixed(4)}µs/op)',
+        );
       });
 
       test('ProxyList: add() performance', () {
@@ -73,7 +74,8 @@ void main() {
 
         expect(notifyCount, iterations);
         print(
-            'ProxyList add(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['List_Proxy_Add']!.toStringAsFixed(4)}µs/op)');
+          'ProxyList add(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['List_Proxy_Add']!.toStringAsFixed(4)}µs/op)',
+        );
       });
 
       test('Baseline: Plain List remove()', () {
@@ -96,11 +98,14 @@ void main() {
             stopwatch.elapsedMicroseconds / iterations;
 
         print(
-            'Plain List removeLast(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['List_Baseline_RemoveLast']!.toStringAsFixed(4)}µs/op)');
+          'Plain List removeLast(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['List_Baseline_RemoveLast']!.toStringAsFixed(4)}µs/op)',
+        );
       });
 
       test('ProxyList: removeLast() performance', () {
-        final prop = ObservableProperty.list<int>(List.generate(iterations, (i) => i));
+        final prop = ObservableProperty.list<int>(
+          List.generate(iterations, (i) => i),
+        );
         var notifyCount = 0;
         prop.propertyChanged(() => notifyCount++);
 
@@ -123,7 +128,8 @@ void main() {
 
         expect(notifyCount, iterations);
         print(
-            'ProxyList removeLast(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['List_Proxy_RemoveLast']!.toStringAsFixed(4)}µs/op)');
+          'ProxyList removeLast(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['List_Proxy_RemoveLast']!.toStringAsFixed(4)}µs/op)',
+        );
       });
 
       test('Baseline: Plain List index assignment', () {
@@ -145,11 +151,14 @@ void main() {
             stopwatch.elapsedMicroseconds / iterations;
 
         print(
-            'Plain List []=: ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['List_Baseline_IndexSet']!.toStringAsFixed(4)}µs/op)');
+          'Plain List []=: ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['List_Baseline_IndexSet']!.toStringAsFixed(4)}µs/op)',
+        );
       });
 
       test('ProxyList: []= performance (with change)', () {
-        final prop = ObservableProperty.list<int>(List.generate(iterations, (i) => i));
+        final prop = ObservableProperty.list<int>(
+          List.generate(iterations, (i) => i),
+        );
         var notifyCount = 0;
         prop.propertyChanged(() => notifyCount++);
 
@@ -165,7 +174,8 @@ void main() {
 
         expect(notifyCount, iterations);
         print(
-            'ProxyList []=: ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['List_Proxy_IndexSet']!.toStringAsFixed(4)}µs/op)');
+          'ProxyList []=: ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['List_Proxy_IndexSet']!.toStringAsFixed(4)}µs/op)',
+        );
       });
     });
 
@@ -190,7 +200,8 @@ void main() {
             stopwatch.elapsedMicroseconds / iterations;
 
         print(
-            'Plain Map []=: ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['Map_Baseline_Insert']!.toStringAsFixed(4)}µs/op)');
+          'Plain Map []=: ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['Map_Baseline_Insert']!.toStringAsFixed(4)}µs/op)',
+        );
       });
 
       test('ProxyMap: []= performance (new keys)', () {
@@ -217,7 +228,8 @@ void main() {
 
         expect(notifyCount, iterations);
         print(
-            'ProxyMap []=: ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['Map_Proxy_Insert']!.toStringAsFixed(4)}µs/op)');
+          'ProxyMap []=: ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['Map_Proxy_Insert']!.toStringAsFixed(4)}µs/op)',
+        );
       });
 
       test('Baseline: Plain Map remove', () {
@@ -237,7 +249,8 @@ void main() {
             stopwatch.elapsedMicroseconds / iterations;
 
         print(
-            'Plain Map remove(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['Map_Baseline_Remove']!.toStringAsFixed(4)}µs/op)');
+          'Plain Map remove(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['Map_Baseline_Remove']!.toStringAsFixed(4)}µs/op)',
+        );
       });
 
       test('ProxyMap: remove() performance', () {
@@ -261,7 +274,8 @@ void main() {
 
         expect(notifyCount, iterations);
         print(
-            'ProxyMap remove(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['Map_Proxy_Remove']!.toStringAsFixed(4)}µs/op)');
+          'ProxyMap remove(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['Map_Proxy_Remove']!.toStringAsFixed(4)}µs/op)',
+        );
       });
     });
 
@@ -286,7 +300,8 @@ void main() {
             stopwatch.elapsedMicroseconds / iterations;
 
         print(
-            'Plain Set add(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['Set_Baseline_Add']!.toStringAsFixed(4)}µs/op)');
+          'Plain Set add(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['Set_Baseline_Add']!.toStringAsFixed(4)}µs/op)',
+        );
       });
 
       test('ProxySet: add() performance', () {
@@ -313,7 +328,8 @@ void main() {
 
         expect(notifyCount, iterations);
         print(
-            'ProxySet add(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['Set_Proxy_Add']!.toStringAsFixed(4)}µs/op)');
+          'ProxySet add(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['Set_Proxy_Add']!.toStringAsFixed(4)}µs/op)',
+        );
       });
 
       test('Baseline: Plain Set remove', () {
@@ -333,7 +349,8 @@ void main() {
             stopwatch.elapsedMicroseconds / iterations;
 
         print(
-            'Plain Set remove(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['Set_Baseline_Remove']!.toStringAsFixed(4)}µs/op)');
+          'Plain Set remove(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['Set_Baseline_Remove']!.toStringAsFixed(4)}µs/op)',
+        );
       });
 
       test('ProxySet: remove() performance', () {
@@ -357,7 +374,8 @@ void main() {
 
         expect(notifyCount, iterations);
         print(
-            'ProxySet remove(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['Set_Proxy_Remove']!.toStringAsFixed(4)}µs/op)');
+          'ProxySet remove(): ${stopwatch.elapsedMicroseconds}µs for $iterations ops (${_results.mutationLatency['Set_Proxy_Remove']!.toStringAsFixed(4)}µs/op)',
+        );
       });
     });
 
@@ -373,11 +391,13 @@ void main() {
         }
         stopwatch.stop();
 
-        final throughput = iterations / (stopwatch.elapsedMicroseconds / 1000000);
+        final throughput =
+            iterations / (stopwatch.elapsedMicroseconds / 1000000);
         _results.notificationThroughput['List'] = throughput;
 
         print(
-            'List notification throughput: ${throughput.toStringAsFixed(0)} ops/sec');
+          'List notification throughput: ${throughput.toStringAsFixed(0)} ops/sec',
+        );
       });
 
       test('Map: notifications per second', () {
@@ -391,11 +411,13 @@ void main() {
         }
         stopwatch.stop();
 
-        final throughput = iterations / (stopwatch.elapsedMicroseconds / 1000000);
+        final throughput =
+            iterations / (stopwatch.elapsedMicroseconds / 1000000);
         _results.notificationThroughput['Map'] = throughput;
 
         print(
-            'Map notification throughput: ${throughput.toStringAsFixed(0)} ops/sec');
+          'Map notification throughput: ${throughput.toStringAsFixed(0)} ops/sec',
+        );
       });
 
       test('Set: notifications per second', () {
@@ -409,11 +431,13 @@ void main() {
         }
         stopwatch.stop();
 
-        final throughput = iterations / (stopwatch.elapsedMicroseconds / 1000000);
+        final throughput =
+            iterations / (stopwatch.elapsedMicroseconds / 1000000);
         _results.notificationThroughput['Set'] = throughput;
 
         print(
-            'Set notification throughput: ${throughput.toStringAsFixed(0)} ops/sec');
+          'Set notification throughput: ${throughput.toStringAsFixed(0)} ops/sec',
+        );
       });
     });
 
@@ -425,7 +449,8 @@ void main() {
         if (baseline > 0) {
           final overhead = ((proxy - baseline) / baseline) * 100;
           print(
-              '\n📊 List add() overhead: ${overhead.toStringAsFixed(2)}% (${baseline.toStringAsFixed(4)}µs → ${proxy.toStringAsFixed(4)}µs)');
+            '\n📊 List add() overhead: ${overhead.toStringAsFixed(2)}% (${baseline.toStringAsFixed(4)}µs → ${proxy.toStringAsFixed(4)}µs)',
+          );
         }
       });
 
@@ -436,7 +461,8 @@ void main() {
         if (baseline > 0) {
           final overhead = ((proxy - baseline) / baseline) * 100;
           print(
-              '📊 Map insert overhead: ${overhead.toStringAsFixed(2)}% (${baseline.toStringAsFixed(4)}µs → ${proxy.toStringAsFixed(4)}µs)');
+            '📊 Map insert overhead: ${overhead.toStringAsFixed(2)}% (${baseline.toStringAsFixed(4)}µs → ${proxy.toStringAsFixed(4)}µs)',
+          );
         }
       });
 
@@ -447,7 +473,8 @@ void main() {
         if (baseline > 0) {
           final overhead = ((proxy - baseline) / baseline) * 100;
           print(
-              '📊 Set add() overhead: ${overhead.toStringAsFixed(2)}% (${baseline.toStringAsFixed(4)}µs → ${proxy.toStringAsFixed(4)}µs)');
+            '📊 Set add() overhead: ${overhead.toStringAsFixed(2)}% (${baseline.toStringAsFixed(4)}µs → ${proxy.toStringAsFixed(4)}µs)',
+          );
         }
       });
 
