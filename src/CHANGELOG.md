@@ -1,3 +1,11 @@
+## 3.0.0+1
+
+### Documentation
+
+- Added **Fast Command Actions** best practice to README — guidance on avoiding blocked rapid taps with `AsyncRelayCommand.param<T>` in selection/navigation patterns
+- Added tip in Parameterized Commands section cross-referencing the new best practice
+- Added unit tests documenting `AsyncRelayCommandWithParam` blocking behavior for different-parameter calls
+
 ## 3.0.0
 
 **V3 Major Release** - Unified Command API with `.param<T>()` factory methods for both widgets and core commands.
