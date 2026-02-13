@@ -35,7 +35,7 @@ A lightweight MVVM framework for Flutter with strongly-typed reactive data bindi
 
 ```yaml
 dependencies:
-  fairy: ^3.0.0
+  fairy: ^3.0.0+1
 ```
 
 ## Quick Start
@@ -231,6 +231,8 @@ class TodoViewModel extends ObservableObject {
 ```
 
 > **Note:** `.param<T>()` factory methods are preferred. Direct constructors (`RelayCommandWithParam<T>`, `AsyncRelayCommandWithParam<T>`) are also available for type annotations.
+
+> **Tip:** `AsyncRelayCommand.param<T>` blocks concurrent execution — `execute("B")` is silently dropped while `execute("A")` is still running. This is fine for data-loading commands like `loadCommand` above, but can cause missed taps in selection-style commands. See [Fast Command Actions](#fast-command-actions) for the fix.
 
 ### Error Handling
 
@@ -778,6 +780,32 @@ dispose = viewModel.propertyChanged(() { print('changed'); });
 // ✅ BEST: Use Bind/Command widgets (auto-managed)
 ```
 
+### Fast Command Actions
+
+`AsyncRelayCommand` and `AsyncRelayCommand.param<T>` block concurrent execution — while running, `canExecute` returns `false` and subsequent `execute()` calls are silently dropped. This is ideal for destructive/submit actions (delete, save, submit) where double-execution is dangerous.
+
+For **selection or navigation patterns** (tapping items in a list, switching tabs), this means rapid taps get lost if the action awaits slow I/O. The fix: update observable state **synchronously**, then fire-and-forget the slow async work.
+
+**Before (broken — blocks rapid taps):**
+```dart
+late final selectCommand = AsyncRelayCommand.param<String>(
+  (id) async {
+    selectedId.value = id;
+    await api.saveSelection(id);  // Slow — blocks next tap
+  },
+);
+```
+
+**After (correct — instant state update):**
+```dart
+late final selectCommand = AsyncRelayCommand.param<String>(
+  (id) async {
+    selectedId.value = id;             // Instant UI update
+    unawaited(_persistSelection(id));  // Fire-and-forget slow work
+  },
+);
+```
+
 ### Architecture Guidelines
 
 **ViewModel:**
@@ -884,7 +912,7 @@ Fairy follows a **non-breaking minor version** principle:
 
 **Upgrade confidence:** You can safely upgrade within the same major version without code changes.
 
-**Support policy:** Only the current and previous major versions receive updates. Once v3.0 is released, v1.x will no longer receive updates (v2.x and v3.x will be supported).
+**Support policy:** Only the current and previous major versions receive updates. Once v4.0 is released, v2.x will no longer receive updates (v3.x and v4.x will be supported).
 
 ## License
 
