@@ -17,7 +17,7 @@ The benchmarks compare three frameworks:
 - **📦 Provider**: Popular state management solution  
 - **🏗️ Riverpod**: Modern reactive framework
 
-### Latest Results (v1.4.0)
+### Latest Results (v3.0.1)
 
 Performance metrics (median of 5 measurements per test, averaged across 5 complete runs):
 
