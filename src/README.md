@@ -35,7 +35,7 @@ A lightweight MVVM framework for Flutter with strongly-typed reactive data bindi
 
 ```yaml
 dependencies:
-  fairy: ^3.0.0+1
+  fairy: ^3.0.1
 ```
 
 ## Quick Start
@@ -838,7 +838,7 @@ Fairy is designed for performance. Benchmark results comparing with popular stat
 - **Unique**: Only framework achieving 100% selective efficiency (500 rebuilds) vs 33% for Provider/Riverpod (1500 rebuilds)
 - **Memory**: **Intentional design decision** to use 13% more memory in exchange for 26-34% faster rebuilds (both auto-tracking and selective binding) plus superior developer experience with command auto-tracking
 
-*Lower is better. Percentages relative to the fastest framework in each category. Benchmarked on v2.0.0.*
+*Lower is better. Percentages relative to the fastest framework in each category. Benchmarked on v3.0.1.*
 
 ## Example
 
