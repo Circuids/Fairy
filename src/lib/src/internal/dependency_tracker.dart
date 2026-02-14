@@ -252,8 +252,7 @@ class _TrackingLayoutWidget extends StatelessWidget {
   /// Detects whether this widget is in a context that expects sliver children.
   /// If so, inserting a RenderProxyBox (a RenderBox) would cause a type error.
   static bool _isInSliverContext(BuildContext context) {
-    final parent =
-        context.findAncestorRenderObjectOfType<RenderObject>();
+    final parent = context.findAncestorRenderObjectOfType<RenderObject>();
     if (parent == null) return false;
 
     // RenderViewport is a RenderBox whose children must be RenderSlivers

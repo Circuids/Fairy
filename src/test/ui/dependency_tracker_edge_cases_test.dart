@@ -407,19 +407,15 @@ void main() {
         vm.highlight.value = 'b';
         await tester.pump();
 
-        expect(buildsA, 2,
-            reason: 'A reads highlight in deferred builder');
-        expect(buildsB, 1,
-            reason: 'B does NOT read highlight');
+        expect(buildsA, 2, reason: 'A reads highlight in deferred builder');
+        expect(buildsB, 1, reason: 'B does NOT read highlight');
 
         // Change separator — only Widget B should rebuild
         vm.separator.value = '===';
         await tester.pump();
 
-        expect(buildsA, 2,
-            reason: 'A does NOT read separator');
-        expect(buildsB, 2,
-            reason: 'B reads separator in deferred builder');
+        expect(buildsA, 2, reason: 'A does NOT read separator');
+        expect(buildsB, 2, reason: 'B reads separator in deferred builder');
       },
     );
 
@@ -711,8 +707,7 @@ void main() {
                           cmdBuilds++;
                           return ElevatedButton(
                             onPressed: canExecute ? execute : null,
-                            child:
-                                Text('Can: $canExecute Running: $isRunning'),
+                            child: Text('Can: $canExecute Running: $isRunning'),
                           );
                         },
                       ),
@@ -830,8 +825,7 @@ void main() {
                     return ListView.builder(
                       itemCount: vm.items.value.length,
                       itemBuilder: (context, index) {
-                        final isM =
-                            vm.items.value[index] == vm.marker.value;
+                        final isM = vm.items.value[index] == vm.marker.value;
                         return Text(
                           '${vm.items.value[index]}${isM ? " *" : ""}',
                         );
@@ -1058,8 +1052,7 @@ void main() {
                   return ListView.builder(
                     itemCount: vm.items.value.length,
                     itemBuilder: (context, index) {
-                      final isH =
-                          vm.items.value[index] == vm.highlight.value;
+                      final isH = vm.items.value[index] == vm.highlight.value;
                       return Text(
                         '${vm.items.value[index]}${isH ? " *" : ""}',
                       );
@@ -1269,9 +1262,12 @@ void main() {
         final savedMiddle2 = middleBuilds;
         vm.highlight.value = 'c';
         await tester.pump();
-        expect(outerBuilds, savedOuter2, reason: 'Outer does NOT read highlight');
-        expect(middleBuilds, savedMiddle2, reason: 'Middle does NOT read highlight');
-        expect(innerBuilds, savedInner + 2, // +1 from separator change, +1 from highlight
+        expect(outerBuilds, savedOuter2,
+            reason: 'Outer does NOT read highlight');
+        expect(middleBuilds, savedMiddle2,
+            reason: 'Middle does NOT read highlight');
+        expect(innerBuilds,
+            savedInner + 2, // +1 from separator change, +1 from highlight
             reason: 'Inner reads highlight in deferred builder');
       },
     );
@@ -1464,8 +1460,8 @@ void main() {
                   return Column(
                     children: [
                       ElevatedButton(
-                        onPressed: () => setState2(
-                            () => currentKey = const ValueKey('v2')),
+                        onPressed: () =>
+                            setState2(() => currentKey = const ValueKey('v2')),
                         child: const Text('Change Key'),
                       ),
                       Expanded(
@@ -1622,8 +1618,7 @@ void main() {
         vm.separator.value = '===';
         await tester.pump();
         expect(listBuilds, 2);
-        expect(siblingBuilds, 1,
-            reason: 'Sibling does NOT read separator');
+        expect(siblingBuilds, 1, reason: 'Sibling does NOT read separator');
 
         // Change label — only sibling rebuilds
         vm.label.value = 'new';
@@ -1660,8 +1655,7 @@ void main() {
                     return ListView.builder(
                       itemCount: vm.items.value.length,
                       itemBuilder: (context, index) {
-                        final isH =
-                            vm.items.value[index] == vm.highlight.value;
+                        final isH = vm.items.value[index] == vm.highlight.value;
                         return Text(
                           '${vm.items.value[index]}${isH ? " *" : ""}',
                         );

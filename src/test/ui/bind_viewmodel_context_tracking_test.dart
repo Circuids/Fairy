@@ -38,8 +38,8 @@ class _ViewModelB extends ObservableObject {
 // ─────────────────────────────────────────────────────────────
 
 void main() {
-  group(
-      'Bind.viewModel — _currentContext cross-widget tracking correctness', () {
+  group('Bind.viewModel — _currentContext cross-widget tracking correctness',
+      () {
     // ───────────────────────────────────────────────────────
     // Test 1 (Baseline): Single widget with lazy builder
     // ───────────────────────────────────────────────────────
@@ -253,7 +253,8 @@ void main() {
         expect(
           widgetBBuildCount,
           1,
-          reason: 'Widget B should NOT rebuild — vmA.marker is unrelated to VmB',
+          reason:
+              'Widget B should NOT rebuild — vmA.marker is unrelated to VmB',
         );
       },
     );

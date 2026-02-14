@@ -178,7 +178,8 @@ void main() {
               viewModels: [(_) => vmA, (_) => vmB, (_) => vmC],
               child: Bind.viewModel3<_ViewModelA, _ViewModelB, _ViewModelC>(
                 builder: (context, a, b, c) {
-                  return Text('${a.name.value} ${b.name.value} ${c.name.value}');
+                  return Text(
+                      '${a.name.value} ${b.name.value} ${c.name.value}');
                 },
               ),
             ),
@@ -204,8 +205,7 @@ void main() {
                 expect(
                   () => Bind.viewModel4<_ViewModelA, _ViewModelA, _ViewModelC,
                       _ViewModelD>(
-                    builder: (context, a1, a2, c, d) =>
-                        const SizedBox.shrink(),
+                    builder: (context, a1, a2, c, d) => const SizedBox.shrink(),
                   ),
                   throwsAssertionError,
                 );
@@ -227,8 +227,7 @@ void main() {
                 expect(
                   () => Bind.viewModel4<_ViewModelA, _ViewModelB, _ViewModelA,
                       _ViewModelD>(
-                    builder: (context, a1, b, a2, d) =>
-                        const SizedBox.shrink(),
+                    builder: (context, a1, b, a2, d) => const SizedBox.shrink(),
                   ),
                   throwsAssertionError,
                 );
@@ -250,8 +249,7 @@ void main() {
                 expect(
                   () => Bind.viewModel4<_ViewModelA, _ViewModelB, _ViewModelC,
                       _ViewModelA>(
-                    builder: (context, a1, b, c, a2) =>
-                        const SizedBox.shrink(),
+                    builder: (context, a1, b, c, a2) => const SizedBox.shrink(),
                   ),
                   throwsAssertionError,
                 );
@@ -273,8 +271,7 @@ void main() {
                 expect(
                   () => Bind.viewModel4<_ViewModelA, _ViewModelB, _ViewModelB,
                       _ViewModelD>(
-                    builder: (context, a, b1, b2, d) =>
-                        const SizedBox.shrink(),
+                    builder: (context, a, b1, b2, d) => const SizedBox.shrink(),
                   ),
                   throwsAssertionError,
                 );
@@ -296,8 +293,7 @@ void main() {
                 expect(
                   () => Bind.viewModel4<_ViewModelA, _ViewModelB, _ViewModelC,
                       _ViewModelC>(
-                    builder: (context, a, b, c1, c2) =>
-                        const SizedBox.shrink(),
+                    builder: (context, a, b, c1, c2) => const SizedBox.shrink(),
                   ),
                   throwsAssertionError,
                 );

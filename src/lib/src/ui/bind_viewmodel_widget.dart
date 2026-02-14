@@ -293,10 +293,10 @@ class BindViewModel2<TViewModel1 extends ObservableObject,
     super.key,
     required this.builder,
   }) : assert(
-         TViewModel1 != TViewModel2,
-         'BindViewModel2 requires two different ViewModel types. '
-         'Use BindViewModel instead for a single ViewModel type.',
-       );
+          TViewModel1 != TViewModel2,
+          'BindViewModel2 requires two different ViewModel types. '
+          'Use BindViewModel instead for a single ViewModel type.',
+        );
 
   @override
   State<BindViewModel2<TViewModel1, TViewModel2>> createState() =>
@@ -435,12 +435,12 @@ class BindViewModel3<
     super.key,
     required this.builder,
   }) : assert(
-         TViewModel1 != TViewModel2 &&
-             TViewModel1 != TViewModel3 &&
-             TViewModel2 != TViewModel3,
-         'BindViewModel3 requires three different ViewModel types. '
-         'Each type parameter must be unique.',
-       );
+          TViewModel1 != TViewModel2 &&
+              TViewModel1 != TViewModel3 &&
+              TViewModel2 != TViewModel3,
+          'BindViewModel3 requires three different ViewModel types. '
+          'Each type parameter must be unique.',
+        );
 
   @override
   State<BindViewModel3<TViewModel1, TViewModel2, TViewModel3>> createState() =>
@@ -586,15 +586,15 @@ class BindViewModel4<
     super.key,
     required this.builder,
   }) : assert(
-         TViewModel1 != TViewModel2 &&
-             TViewModel1 != TViewModel3 &&
-             TViewModel1 != TViewModel4 &&
-             TViewModel2 != TViewModel3 &&
-             TViewModel2 != TViewModel4 &&
-             TViewModel3 != TViewModel4,
-         'BindViewModel4 requires four different ViewModel types. '
-         'Each type parameter must be unique.',
-       );
+          TViewModel1 != TViewModel2 &&
+              TViewModel1 != TViewModel3 &&
+              TViewModel1 != TViewModel4 &&
+              TViewModel2 != TViewModel3 &&
+              TViewModel2 != TViewModel4 &&
+              TViewModel3 != TViewModel4,
+          'BindViewModel4 requires four different ViewModel types. '
+          'Each type parameter must be unique.',
+        );
 
   @override
   State<BindViewModel4<TViewModel1, TViewModel2, TViewModel3, TViewModel4>>
