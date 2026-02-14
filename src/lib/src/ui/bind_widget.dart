@@ -161,6 +161,11 @@ class Bind<TViewModel extends ObservableObject, TValue> extends StatefulWidget {
             BuildContext context, TViewModel1 vm1, TViewModel2 vm2)
         builder,
   }) {
+    assert(
+      TViewModel1 != TViewModel2,
+      'Bind.viewModel2 requires two different ViewModel types. '
+      'Use Bind.viewModel instead for a single ViewModel type.',
+    );
     return BindViewModel2<TViewModel1, TViewModel2>(
       key: key,
       builder: builder,
@@ -196,6 +201,13 @@ class Bind<TViewModel extends ObservableObject, TValue> extends StatefulWidget {
       TViewModel3 vm3,
     ) builder,
   }) {
+    assert(
+      TViewModel1 != TViewModel2 &&
+          TViewModel1 != TViewModel3 &&
+          TViewModel2 != TViewModel3,
+      'Bind.viewModel3 requires three different ViewModel types. '
+      'Each type parameter must be unique.',
+    );
     return BindViewModel3<TViewModel1, TViewModel2, TViewModel3>(
       key: key,
       builder: builder,
@@ -235,6 +247,16 @@ class Bind<TViewModel extends ObservableObject, TValue> extends StatefulWidget {
       TViewModel4 vm4,
     ) builder,
   }) {
+    assert(
+      TViewModel1 != TViewModel2 &&
+          TViewModel1 != TViewModel3 &&
+          TViewModel1 != TViewModel4 &&
+          TViewModel2 != TViewModel3 &&
+          TViewModel2 != TViewModel4 &&
+          TViewModel3 != TViewModel4,
+      'Bind.viewModel4 requires four different ViewModel types. '
+      'Each type parameter must be unique.',
+    );
     return BindViewModel4<TViewModel1, TViewModel2, TViewModel3, TViewModel4>(
       key: key,
       builder: builder,
@@ -381,23 +403,31 @@ class _BindState<TViewModel extends ObservableObject, TValue>
 
   @override
   Widget build(BuildContext context) {
-    // Extract value and update callback based on binding type
-    if (_selected is ObservableProperty<TValue>) {
-      // Two-way binding
-      final property = _selected as ObservableProperty<TValue>;
-      return widget.builder(
-        context,
-        property.value,
-        (newValue) => property.value = newValue,
-      );
-    } else if (_selected is ComputedProperty<TValue>) {
-      // One-way binding with ComputedProperty
-      final computed = _selected as ComputedProperty<TValue>;
-      return widget.builder(context, computed.value, null);
-    } else {
-      // One-way binding
-      final value = _selected as TValue;
-      return widget.builder(context, value, null);
-    }
+    // Wrap in track() to create an isolated session. This prevents
+    // property.value accesses from leaking into ancestor Bind.viewModel
+    // tracking sessions (which push their session during element updates).
+    // The session result is discarded — Bind manages its own subscriptions
+    // via propertyChanged in didChangeDependencies.
+    final (result, _, _) = DependencyTracker.track(() {
+      // Extract value and update callback based on binding type
+      if (_selected is ObservableProperty<TValue>) {
+        // Two-way binding
+        final property = _selected as ObservableProperty<TValue>;
+        return widget.builder(
+          context,
+          property.value,
+          (newValue) => property.value = newValue,
+        );
+      } else if (_selected is ComputedProperty<TValue>) {
+        // One-way binding with ComputedProperty
+        final computed = _selected as ComputedProperty<TValue>;
+        return widget.builder(context, computed.value, null);
+      } else {
+        // One-way binding
+        final value = _selected as TValue;
+        return widget.builder(context, value, null);
+      }
+    });
+    return result;
   }
 }
