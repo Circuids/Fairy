@@ -1,7 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import '../core/observable.dart';
 import '../core/command.dart';
+import '../internal/dependency_tracker.dart';
 import '../locator/fairy_resolver.dart';
 
 /// A widget that binds a [RelayCommand] or [AsyncRelayCommand] to UI.
@@ -217,30 +217,36 @@ class _CommandState<TViewModel extends ObservableObject>
 
   @override
   Widget build(BuildContext context) {
-    // Extract execute, canExecute, and isRunning from command
-    final VoidCallback execute;
-    final bool canExecute;
-    final bool isRunning;
+    // Wrap in track() to create an isolated session. This prevents
+    // command property accesses (canExecute, isRunning) from leaking
+    // into ancestor Bind.viewModel tracking sessions.
+    final (result, _, _) = DependencyTracker.track(() {
+      // Extract execute, canExecute, and isRunning from command
+      final VoidCallback execute;
+      final bool canExecute;
+      final bool isRunning;
 
-    if (_commandInstance is RelayCommand) {
-      final cmd = _commandInstance as RelayCommand;
-      execute = cmd.execute;
-      canExecute = cmd.canExecute;
-      isRunning = false; // Sync commands never run asynchronously
-    } else if (_commandInstance is AsyncRelayCommand) {
-      final cmd = _commandInstance as AsyncRelayCommand;
-      execute = cmd.execute;
-      canExecute = cmd.canExecute;
-      isRunning = cmd.isRunning; // Actual running state for async commands
-    } else {
-      throw StateError(
-        'Command<$TViewModel> selector must return a RelayCommand or AsyncRelayCommand. '
-        'Got: ${_commandInstance.runtimeType}. '
-        'For parameterized commands, use Command.param<$TViewModel, TParam>() instead.',
-      );
-    }
+      if (_commandInstance is RelayCommand) {
+        final cmd = _commandInstance as RelayCommand;
+        execute = cmd.execute;
+        canExecute = cmd.canExecute;
+        isRunning = false; // Sync commands never run asynchronously
+      } else if (_commandInstance is AsyncRelayCommand) {
+        final cmd = _commandInstance as AsyncRelayCommand;
+        execute = cmd.execute;
+        canExecute = cmd.canExecute;
+        isRunning = cmd.isRunning; // Actual running state for async commands
+      } else {
+        throw StateError(
+          'Command<$TViewModel> selector must return a RelayCommand or AsyncRelayCommand. '
+          'Got: ${_commandInstance.runtimeType}. '
+          'For parameterized commands, use Command.param<$TViewModel, TParam>() instead.',
+        );
+      }
 
-    return widget.builder(context, execute, canExecute, isRunning);
+      return widget.builder(context, execute, canExecute, isRunning);
+    });
+    return result;
   }
 }
 
@@ -330,29 +336,35 @@ class _CommandWithParamState<TViewModel extends ObservableObject, TParam>
 
   @override
   Widget build(BuildContext context) {
-    final void Function(TParam) execute;
-    final bool Function(TParam) canExecute;
-    final bool isRunning;
+    // Wrap in track() to create an isolated session. This prevents
+    // command property accesses (canExecute, isRunning) from leaking
+    // into ancestor Bind.viewModel tracking sessions.
+    final (result, _, _) = DependencyTracker.track(() {
+      final void Function(TParam) execute;
+      final bool Function(TParam) canExecute;
+      final bool isRunning;
 
-    if (_commandInstance is RelayCommandWithParam<TParam>) {
-      final cmd = _commandInstance as RelayCommandWithParam<TParam>;
-      execute = cmd.execute;
-      canExecute = cmd.canExecute;
-      isRunning = false; // Sync commands never run asynchronously
-    } else if (_commandInstance is AsyncRelayCommandWithParam<TParam>) {
-      final cmd = _commandInstance as AsyncRelayCommandWithParam<TParam>;
-      execute = cmd.execute;
-      canExecute = cmd.canExecute;
-      isRunning = cmd.isRunning; // Actual running state for async commands
-    } else {
-      throw StateError(
-        'Command.param<$TViewModel, $TParam> selector must return a '
-        'RelayCommandWithParam<$TParam> or AsyncRelayCommandWithParam<$TParam>. '
-        'Got: ${_commandInstance.runtimeType}. '
-        'For non-parameterized commands, use Command<$TViewModel>() instead.',
-      );
-    }
+      if (_commandInstance is RelayCommandWithParam<TParam>) {
+        final cmd = _commandInstance as RelayCommandWithParam<TParam>;
+        execute = cmd.execute;
+        canExecute = cmd.canExecute;
+        isRunning = false; // Sync commands never run asynchronously
+      } else if (_commandInstance is AsyncRelayCommandWithParam<TParam>) {
+        final cmd = _commandInstance as AsyncRelayCommandWithParam<TParam>;
+        execute = cmd.execute;
+        canExecute = cmd.canExecute;
+        isRunning = cmd.isRunning; // Actual running state for async commands
+      } else {
+        throw StateError(
+          'Command.param<$TViewModel, $TParam> selector must return a '
+          'RelayCommandWithParam<$TParam> or AsyncRelayCommandWithParam<$TParam>. '
+          'Got: ${_commandInstance.runtimeType}. '
+          'For non-parameterized commands, use Command<$TViewModel>() instead.',
+        );
+      }
 
-    return widget.builder(context, execute, canExecute, isRunning);
+      return widget.builder(context, execute, canExecute, isRunning);
+    });
+    return result;
   }
 }

@@ -74,7 +74,7 @@ export 'src/locator/fairy_resolver.dart' show Fairy;
 // UI binding widgets
 export 'src/ui/bind_widget.dart' show Bind;
 export 'src/ui/bind_viewmodel_widget.dart'
-    show BindViewModel, BindViewModel2, BindViewModel3;
+    show BindViewModel, BindViewModel2, BindViewModel3, BindViewModel4;
 export 'src/ui/command_widget.dart' show Command, CommandWithParam;
 export 'src/ui/fairy_bridge.dart' show FairyBridge;
 // Utilities

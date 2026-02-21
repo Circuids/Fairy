@@ -1,3 +1,22 @@
+## 3.0.1
+
+### Bug Fixes
+
+- **Fixed `DependencyTracker` cross-widget tracking corruption** — When multiple `Bind.viewModel` widgets coexisted in the same tree, the global `_currentContext` could be overwritten by sibling widgets, causing deferred builder accesses (e.g., `ListView.builder`'s `itemBuilder`) to be attributed to the wrong widget. The fix introduces a 3-layer tracking approach:
+  - `_TrackingContextElement` with `update()`/`performRebuild()` overrides for build-phase tracking
+  - `_BoxTrackingRenderBox` / `_SliverTrackingRenderBox` for initial layout-phase tracking (auto-detects sliver vs box context)
+  - Guard sessions in `Bind` and `Command` widget `build()` methods via `DependencyTracker.track()` for session isolation
+
+### New Features
+
+- **Duplicate ViewModel type assertion** — `Bind.viewModel2`, `Bind.viewModel3`, `Bind.viewModel4` (and their direct `BindViewModel2/3/4` constructors) now throw an `AssertionError` in debug mode when the same ViewModel type is used for multiple type parameters (e.g., `Bind.viewModel2<FooVM, FooVM>` will fail). Use `Bind.viewModel` instead for a single ViewModel type.
+- **Exported `BindViewModel4`** — `BindViewModel4` is now publicly exported from the package for advanced users who prefer direct constructor usage.
+
+### Tests
+
+- Added 40 dependency tracker edge-case tests covering slivers, multi-widget isolation, nested Bind/Command, conditional rendering, rapid/stress scenarios, session stack integrity, and `Bind.viewModel2/3/4` deferred tracking
+- Added 17 duplicate ViewModel type assertion tests covering all pair combinations for `viewModel2`, `viewModel3`, and `viewModel4`
+
 ## 3.0.0+1
 
 ### Documentation
