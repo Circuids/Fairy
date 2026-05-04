@@ -156,7 +156,7 @@ void main() {
 
       await tester.pumpWidget(
         FairyScope(
-          viewModel: (_) => TestViewModel(),
+          viewModels: [ViewModelFactory((_) => TestViewModel())],
           child: Builder(
             builder: (context) {
               capturedData = FairyScope.of(context);
@@ -185,14 +185,14 @@ void main() {
       expect(capturedData, isNull);
     });
 
-    group('viewModel parameter', () {
+    group('single ViewModelFactory', () {
       testWidgets('should create and register ViewModel via factory',
           (tester) async {
         TestViewModel? vm;
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => TestViewModel(),
+            viewModels: [ViewModelFactory((locator) => TestViewModel())],
             child: Builder(
               builder: (context) {
                 final data = FairyScope.of(context);
@@ -214,10 +214,12 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) {
-              createCount++;
-              return TestViewModel();
-            },
+            viewModels: [
+              ViewModelFactory((locator) {
+                createCount++;
+                return TestViewModel();
+              }),
+            ],
             child: Builder(
               builder: (context) {
                 final data = FairyScope.of(context);
@@ -228,11 +230,11 @@ void main() {
           ),
         );
 
-        // Factory called once during initState
+        // Lazy factory called on first get<T>() during build
         expect(createCount, equals(1));
         expect(vm, isNotNull);
 
-        // Rebuild (pump without changing widget tree) should NOT recreate VM
+        // Rebuild should NOT recreate VM
         await tester.pump();
 
         // Count stays at 1 - factory not called again
@@ -249,7 +251,7 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => vm,
+            viewModels: [ViewModelFactory((locator) => vm)],
             child: const SizedBox(),
           ),
         );
@@ -270,8 +272,8 @@ void main() {
         await tester.pumpWidget(
           FairyScope(
             viewModels: [
-              (locator) => TestViewModel(),
-              (locator) => AnotherViewModel(),
+              ViewModelFactory((locator) => TestViewModel()),
+              ViewModelFactory((locator) => AnotherViewModel()),
             ],
             child: Builder(
               builder: (context) {
@@ -293,8 +295,8 @@ void main() {
         await tester.pumpWidget(
           FairyScope(
             viewModels: [
-              (locator) => vm1,
-              (locator) => vm2,
+              ViewModelFactory((locator) => vm1),
+              ViewModelFactory((locator) => vm2),
             ],
             child: const SizedBox(),
           ),
@@ -316,9 +318,9 @@ void main() {
         await tester.pumpWidget(
           FairyScope(
             viewModels: [
-              (locator) => TestViewModel(),
-              (locator) => AnotherViewModel(),
-              (locator) => ThirdViewModel(),
+              ViewModelFactory((locator) => TestViewModel()),
+              ViewModelFactory((locator) => AnotherViewModel()),
+              ViewModelFactory((locator) => ThirdViewModel()),
             ],
             child: Builder(
               builder: (context) {
@@ -341,7 +343,7 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => vm,
+            viewModels: [ViewModelFactory((locator) => vm)],
             child: const SizedBox(),
           ),
         );
@@ -359,7 +361,7 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => vm,
+            viewModels: [ViewModelFactory((locator) => vm)],
             autoDispose: false,
             child: const SizedBox(),
           ),
@@ -377,7 +379,7 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => vm,
+            viewModels: [ViewModelFactory((locator) => vm)],
             // autoDispose not specified (defaults to true)
             child: const SizedBox(),
           ),
@@ -397,8 +399,8 @@ void main() {
         await tester.pumpWidget(
           FairyScope(
             viewModels: [
-              (locator) => createdVm1,
-              (locator) => createdVm2,
+              ViewModelFactory((locator) => createdVm1),
+              ViewModelFactory((locator) => createdVm2),
             ],
             child: const SizedBox(),
           ),
@@ -420,7 +422,7 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => vm,
+            viewModels: [ViewModelFactory((locator) => vm)],
             child: const SizedBox(),
           ),
         );
@@ -439,7 +441,7 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: const SizedBox(),
           ),
         );
@@ -458,14 +460,14 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => TestViewModel(),
+            viewModels: [ViewModelFactory((locator) => TestViewModel())],
             child: Builder(
               builder: (outerContext) {
                 final outerData = FairyScope.of(outerContext);
                 outerVm = outerData?.get<TestViewModel>();
 
                 return FairyScope(
-                  viewModel: (locator) => AnotherViewModel(),
+                  viewModels: [ViewModelFactory((locator) => AnotherViewModel())],
                   child: Builder(
                     builder: (innerContext) {
                       final innerData = FairyScope.of(innerContext);
@@ -489,9 +491,9 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => TestViewModel(),
+            viewModels: [ViewModelFactory((locator) => TestViewModel())],
             child: FairyScope(
-              viewModel: (locator) => AnotherViewModel(),
+              viewModels: [ViewModelFactory((locator) => AnotherViewModel())],
               child: Builder(
                 builder: (context) {
                   final data = FairyScope.of(context);
@@ -516,9 +518,9 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => outerVm,
+            viewModels: [ViewModelFactory((locator) => outerVm)],
             child: FairyScope(
-              viewModel: (locator) => innerVm,
+              viewModels: [ViewModelFactory((locator) => innerVm)],
               child: const SizedBox(),
             ),
           ),
@@ -541,7 +543,7 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => viewModel,
+            viewModels: [ViewModelFactory((locator) => viewModel)],
             child: const _TestPageWidget(),
           ),
         );
@@ -555,20 +557,6 @@ void main() {
         expect(find.text('Count: 1'), findsOneWidget);
       });
 
-      testWidgets(
-          'should throw assertion if both viewModel and viewModels are provided',
-          (tester) async {
-        // Trying to use both parameters should trigger assertion
-        expect(
-          () => FairyScope(
-            viewModel: (locator) => AnotherViewModel(),
-            viewModels: [(locator) => TestViewModel()],
-            child: const SizedBox(),
-          ),
-          throwsA(isA<AssertionError>()),
-        );
-      });
-
       testWidgets('should create new ViewModels on widget replacement',
           (tester) async {
         var createCount = 0;
@@ -577,10 +565,12 @@ void main() {
         await tester.pumpWidget(
           FairyScope(
             key: const ValueKey(1),
-            viewModel: (locator) {
-              createCount++;
-              return PageViewModel();
-            },
+            viewModels: [
+              ViewModelFactory((locator) {
+                createCount++;
+                return PageViewModel();
+              }),
+            ],
             child: Builder(
               builder: (context) {
                 final vm = FairyScope.of(context)!.get<PageViewModel>();
@@ -598,10 +588,12 @@ void main() {
         await tester.pumpWidget(
           FairyScope(
             key: const ValueKey(2),
-            viewModel: (locator) {
-              createCount++;
-              return PageViewModel();
-            },
+            viewModels: [
+              ViewModelFactory((locator) {
+                createCount++;
+                return PageViewModel();
+              }),
+            ],
             child: Builder(
               builder: (context) {
                 final vm = FairyScope.of(context)!.get<PageViewModel>();
@@ -635,11 +627,13 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) {
-              final resolvedService = locator.get<TestService>();
-              expect(identical(resolvedService, service), isTrue);
-              return TestViewModel();
-            },
+            viewModels: [
+              ViewModelFactory((locator) {
+                final resolvedService = locator.get<TestService>();
+                expect(identical(resolvedService, service), isTrue);
+                return TestViewModel();
+              }),
+            ],
             child: Builder(
               builder: (context) {
                 vm = FairyScope.of(context)?.get<TestViewModel>();
@@ -662,10 +656,12 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => ViewModelWithDependencies(
-              locator.get<TestService>(),
-              locator.get<AnotherService>(),
-            ),
+            viewModels: [
+              ViewModelFactory((locator) => ViewModelWithDependencies(
+                locator.get<TestService>(),
+                locator.get<AnotherService>(),
+              )),
+            ],
             child: Builder(
               builder: (context) {
                 final vm =
@@ -683,10 +679,12 @@ void main() {
           (tester) async {
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) {
-              locator.get<TestService>(); // Not registered!
-              return TestViewModel();
-            },
+            viewModels: [
+              ViewModelFactory((locator) {
+                locator.get<TestService>(); // Not registered!
+                return TestViewModel();
+              }),
+            ],
             child: const SizedBox(),
           ),
         );
@@ -706,14 +704,16 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => parentVm,
+            viewModels: [ViewModelFactory((locator) => parentVm)],
             child: FairyScope(
-              viewModel: (locator) {
-                final resolved = locator.get<TestViewModel>();
-                expect(identical(resolved, parentVm), isTrue);
-                return ViewModelWithDependencies(
-                    TestService(), AnotherService());
-              },
+              viewModels: [
+                ViewModelFactory((locator) {
+                  final resolved = locator.get<TestViewModel>();
+                  expect(identical(resolved, parentVm), isTrue);
+                  return ViewModelWithDependencies(
+                      TestService(), AnotherService());
+                }),
+              ],
               child: Builder(
                 builder: (context) {
                   childVm =
@@ -734,16 +734,18 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => rootVm,
+            viewModels: [ViewModelFactory((locator) => rootVm)],
             child: FairyScope(
-              viewModel: (locator) => middleVm,
+              viewModels: [ViewModelFactory((locator) => middleVm)],
               child: FairyScope(
-                viewModel: (locator) {
-                  // Should get middle scope's VM
-                  final resolved = locator.get<AnotherViewModel>();
-                  expect(identical(resolved, middleVm), isTrue);
-                  return ThirdViewModel();
-                },
+                viewModels: [
+                  ViewModelFactory((locator) {
+                    // Should get middle scope's VM
+                    final resolved = locator.get<AnotherViewModel>();
+                    expect(identical(resolved, middleVm), isTrue);
+                    return ThirdViewModel();
+                  }),
+                ],
                 child: const SizedBox(),
               ),
             ),
@@ -756,16 +758,18 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => grandparentVm,
+            viewModels: [ViewModelFactory((locator) => grandparentVm)],
             child: FairyScope(
-              viewModel: (locator) => AnotherViewModel(),
+              viewModels: [ViewModelFactory((locator) => AnotherViewModel())],
               child: FairyScope(
-                viewModel: (locator) {
-                  // Should traverse up to grandparent scope
-                  final resolved = locator.get<TestViewModel>();
-                  expect(identical(resolved, grandparentVm), isTrue);
-                  return ThirdViewModel();
-                },
+                viewModels: [
+                  ViewModelFactory((locator) {
+                    // Should traverse up to grandparent scope
+                    final resolved = locator.get<TestViewModel>();
+                    expect(identical(resolved, grandparentVm), isTrue);
+                    return ThirdViewModel();
+                  }),
+                ],
                 child: const SizedBox(),
               ),
             ),
@@ -783,18 +787,18 @@ void main() {
         await tester.pumpWidget(
           FairyScope(
             viewModels: [
-              (locator) {
+              ViewModelFactory((locator) {
                 firstVm = TestViewModel();
                 return firstVm!;
-              },
-              (locator) {
-                // Should be able to get first VM
+              }),
+              ViewModelFactory((locator) {
+                // Should be able to get first VM (lazy, but already materialised above)
                 final resolved = locator.get<TestViewModel>();
                 expect(identical(resolved, firstVm), isTrue);
                 secondVm =
                     ViewModelWithDependencies(TestService(), AnotherService());
                 return secondVm!;
-              },
+              }),
             ],
             child: const SizedBox(),
           ),
@@ -809,15 +813,15 @@ void main() {
         await tester.pumpWidget(
           FairyScope(
             viewModels: [
-              (locator) => TestViewModel(),
-              (locator) => ViewModelWithDependencies(
+              ViewModelFactory((locator) => TestViewModel()),
+              ViewModelFactory((locator) => ViewModelWithDependencies(
                     TestService(),
                     AnotherService(),
-                  ),
-              (locator) => ComplexViewModel(
+                  )),
+              ViewModelFactory((locator) => ComplexViewModel(
                     locator.get<TestViewModel>(),
                     locator.get<ViewModelWithDependencies>(),
-                  ),
+                  )),
             ],
             child: Builder(
               builder: (context) {
@@ -836,23 +840,54 @@ void main() {
         );
       });
 
-      testWidgets('should throw if trying to get ViewModel created later',
+      testWidgets(
+          'lazy factories can access other lazy VMs regardless of declaration order',
           (tester) async {
+        // With lazy factories, all VMs are registered before any are materialised.
+        // So the first factory can access the second's lazy VM via the locator.
+        AnotherViewModel? capturedAnother;
+
         await tester.pumpWidget(
           FairyScope(
             viewModels: [
-              (locator) {
-                // Try to get VM that will be created later
-                locator.get<AnotherViewModel>(); // Not created yet!
+              ViewModelFactory((locator) {
+                // Access a VM declared later — succeeds because both are
+                // registered as lazy factories before either is created.
+                capturedAnother = locator.get<AnotherViewModel>();
                 return TestViewModel();
-              },
-              (locator) => AnotherViewModel(),
+              }),
+              ViewModelFactory((locator) => AnotherViewModel()),
             ],
             child: const SizedBox(),
           ),
         );
 
-        // Exception thrown during build is captured by test framework
+        // No exception — lazy cross-access is fine
+        expect(tester.takeException(), isNull);
+        expect(capturedAnother, isNotNull);
+      });
+
+      testWidgets(
+          'eager factories can only access VMs registered before them',
+          (tester) async {
+        // With eager (ViewModelFactory.eager), factories execute sequentially
+        // during initState.  A later VM is not yet registered when an earlier
+        // eager factory runs.
+        await tester.pumpWidget(
+          FairyScope(
+            viewModels: [
+              ViewModelFactory.eager((locator) {
+                // AnotherViewModel is not yet registered (next factory hasn't run)
+                locator.get<AnotherViewModel>(); // Not registered yet!
+                return TestViewModel();
+              }),
+              ViewModelFactory.eager((locator) => AnotherViewModel()),
+            ],
+            child: const SizedBox(),
+          ),
+        );
+
+        // Exception thrown during initState is captured by test framework
         final exception = tester.takeException();
         expect(exception, isA<StateError>());
         expect(exception.toString(),
@@ -870,12 +905,14 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => parentVm,
+            viewModels: [ViewModelFactory((locator) => parentVm)],
             child: FairyScope(
-              viewModel: (locator) => ViewModelWithMixedDependencies(
-                locator.get<TestService>(), // From FairyLocator
-                locator.get<TestViewModel>(), // From parent scope
-              ),
+              viewModels: [
+                ViewModelFactory((locator) => ViewModelWithMixedDependencies(
+                  locator.get<TestService>(), // From FairyLocator
+                  locator.get<TestViewModel>(), // From parent scope
+                )),
+              ],
               child: Builder(
                 builder: (context) {
                   final vm = FairyScope.of(context)!
@@ -901,15 +938,17 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => scopedVm,
+            viewModels: [ViewModelFactory((locator) => scopedVm)],
             child: FairyScope(
-              viewModel: (locator) {
-                final resolved = locator.get<TestViewModel>();
-                // Should get scoped VM, not global
-                expect(identical(resolved, scopedVm), isTrue);
-                expect(identical(resolved, globalVm), isFalse);
-                return AnotherViewModel();
-              },
+              viewModels: [
+                ViewModelFactory((locator) {
+                  final resolved = locator.get<TestViewModel>();
+                  // Should get scoped VM, not global
+                  expect(identical(resolved, scopedVm), isTrue);
+                  expect(identical(resolved, globalVm), isFalse);
+                  return AnotherViewModel();
+                }),
+              ],
               child: const SizedBox(),
             ),
           ),
@@ -918,81 +957,129 @@ void main() {
     });
 
     group('locator lifecycle and safety', () {
-      testWidgets('should invalidate locator after initialization',
+      testWidgets('locator is valid while scope is alive', (tester) async {
+        FairyScopeLocator? capturedLocator;
+        final service = TestService();
+        FairyLocator.registerSingleton<TestService>(service);
+
+        await tester.pumpWidget(
+          FairyScope(
+            viewModels: [
+              ViewModelFactory((locator) {
+                capturedLocator = locator;
+                return TestViewModel();
+              }),
+            ],
+            child: Builder(
+              builder: (ctx) {
+                FairyScope.of(ctx)!.get<TestViewModel>(); // materialise
+                return const SizedBox();
+              },
+            ),
+          ),
+        );
+
+        // Locator was captured during factory creation above
+        expect(capturedLocator, isNotNull);
+
+        // Locator should still be valid while the scope is in the tree
+        expect(
+          () => capturedLocator!.get<TestService>(),
+          returnsNormally,
+        );
+        expect(capturedLocator!.get<TestService>(), same(service));
+      });
+
+      testWidgets('locator is invalidated after scope is disposed',
           (tester) async {
         FairyScopeLocator? capturedLocator;
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) {
-              capturedLocator = locator;
-              return TestViewModel();
-            },
+            viewModels: [
+              ViewModelFactory((locator) {
+                capturedLocator = locator;
+                return TestViewModel();
+              }),
+            ],
             child: const SizedBox(),
           ),
         );
 
-        // Trying to use locator after initialization should throw
-        // AssertionError in debug mode, StateError in release mode
+        // Materialise the VM so the locator is captured
+        final ctx = tester.element(find.byType(SizedBox));
+        FairyScope.of(ctx)!.get<TestViewModel>();
+
+        // Remove the scope from the widget tree
+        await tester.pumpWidget(const SizedBox());
+
+        // Now the locator must throw
         expect(
           () => capturedLocator!.get<TestService>(),
           throwsA(anyOf(isA<AssertionError>(), isA<StateError>())),
         );
       });
 
-      testWidgets('should show helpful error when used outside init',
-          (tester) async {
+      testWidgets('stored locator throws after scope removal', (tester) async {
+        await tester.pumpWidget(
+          FairyScope(
+            viewModels: [
+              ViewModelFactory(
+                  (locator) => BadViewModelWithStoredLocator(locator)),
+            ],
+            child: const SizedBox(),
+          ),
+        );
+
+        final BuildContext context = tester.element(find.byType(SizedBox));
+        final vm =
+            FairyScope.of(context)!.get<BadViewModelWithStoredLocator>();
+
+        // Remove scope
+        await tester.pumpWidget(const SizedBox());
+
+        // Stored locator is invalidated after scope disposal
+        expect(
+          () => vm.tryToUseLocator(),
+          throwsA(anyOf(isA<AssertionError>(), isA<StateError>())),
+        );
+      });
+
+      testWidgets(
+          'stored locator error message is descriptive', (tester) async {
         FairyScopeLocator? capturedLocator;
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) {
-              capturedLocator = locator;
-              return TestViewModel();
-            },
+            viewModels: [
+              ViewModelFactory((locator) {
+                capturedLocator = locator;
+                return TestViewModel();
+              }),
+            ],
             child: const SizedBox(),
           ),
         );
+
+        // Materialise VM
+        final ctx = tester.element(find.byType(SizedBox));
+        FairyScope.of(ctx)!.get<TestViewModel>();
+
+        // Remove scope
+        await tester.pumpWidget(const SizedBox());
 
         try {
           capturedLocator!.get<TestService>();
           fail('Should have thrown');
         } catch (e) {
-          // In debug mode: AssertionError with message about invalidation
-          // In release mode: StateError with helpful message
           expect(
             e.toString(),
             anyOf(
-              contains('FairyScopeLocator used after invalidation'),
-              contains('only be used during ViewModel initialization'),
+              contains('FairyScopeLocator used after its FairyScope was disposed'),
+              contains('FairyScopeLocator can only be used while its FairyScope is active'),
             ),
           );
-          // Only check for detailed message if it's StateError (release mode)
-          if (e is StateError) {
-            expect(e.toString(), contains('Do not store references'));
-          }
         }
-      });
-
-      testWidgets('should not allow storing locator in ViewModel',
-          (tester) async {
-        await tester.pumpWidget(
-          FairyScope(
-            viewModel: (locator) => BadViewModelWithStoredLocator(locator),
-            child: const SizedBox(),
-          ),
-        );
-
-        // Get the VM and try to use stored locator
-        final BuildContext context = tester.element(find.byType(SizedBox));
-        final vm = FairyScope.of(context)!.get<BadViewModelWithStoredLocator>();
-
-        // Should throw when trying to use stored locator
-        // AssertionError in debug mode, StateError in release mode
-        expect(
-          () => vm.tryToUseLocator(),
-          throwsA(anyOf(isA<AssertionError>(), isA<StateError>())),
-        );
       });
     });
 
@@ -1001,10 +1088,12 @@ void main() {
           (tester) async {
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) {
-              locator.get<NonExistentService>();
-              return TestViewModel();
-            },
+            viewModels: [
+              ViewModelFactory((locator) {
+                locator.get<NonExistentService>();
+                return TestViewModel();
+              }),
+            ],
             child: const SizedBox(),
           ),
         );
@@ -1020,10 +1109,12 @@ void main() {
       testWidgets('should provide helpful resolution guidance', (tester) async {
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) {
-              locator.get<TestService>();
-              return TestViewModel();
-            },
+            viewModels: [
+              ViewModelFactory((locator) {
+                locator.get<TestService>();
+                return TestViewModel();
+              }),
+            ],
             child: const SizedBox(),
           ),
         );
@@ -1044,20 +1135,22 @@ void main() {
 
         await tester.pumpWidget(
           FairyScope(
-            viewModel: (locator) => TestViewModel(),
+            viewModels: [ViewModelFactory((locator) => TestViewModel())],
             child: FairyScope(
               viewModels: [
-                (locator) => AnotherViewModel(),
-                (locator) => ViewModelWithDependencies(
+                ViewModelFactory((locator) => AnotherViewModel()),
+                ViewModelFactory((locator) => ViewModelWithDependencies(
                       TestService(),
                       AnotherService(),
-                    ),
+                    )),
               ],
               child: FairyScope(
-                viewModel: (locator) => ComplexViewModel(
-                  locator.get<TestViewModel>(), // From grandparent
-                  locator.get<ViewModelWithDependencies>(), // From parent
-                ),
+                viewModels: [
+                  ViewModelFactory((locator) => ComplexViewModel(
+                    locator.get<TestViewModel>(), // From grandparent
+                    locator.get<ViewModelWithDependencies>(), // From parent
+                  )),
+                ],
                 child: Builder(
                   builder: (context) {
                     final data = FairyScope.of(context)!;
@@ -1086,7 +1179,7 @@ void main() {
             textDirection: TextDirection.ltr,
             children: [
               FairyScope(
-                viewModel: (locator) => scope1Vm,
+                viewModels: [ViewModelFactory((locator) => scope1Vm)],
                 child: Builder(
                   builder: (context) {
                     final vm = FairyScope.of(context)!.get<TestViewModel>();
@@ -1096,7 +1189,7 @@ void main() {
                 ),
               ),
               FairyScope(
-                viewModel: (locator) => scope2Vm,
+                viewModels: [ViewModelFactory((locator) => scope2Vm)],
                 child: Builder(
                   builder: (context) {
                     final vm = FairyScope.of(context)!.get<TestViewModel>();
@@ -1119,47 +1212,54 @@ void main() {
         await tester.pumpWidget(
           FairyScope(
             // Scope 1 - Root
-            viewModel: (locator) => firstScopeVm,
+            viewModels: [ViewModelFactory((locator) => firstScopeVm)],
             child: FairyScope(
               // Scope 2 - Level 1
-              viewModel: (locator) {
-                // Verify can access parent scope
-                final parent = locator.get<TestViewModel>();
-                expect(identical(parent, firstScopeVm), isTrue);
-                return secondScopeVm;
-              },
+              viewModels: [
+                ViewModelFactory((locator) {
+                  // Verify can access parent scope
+                  final parent = locator.get<TestViewModel>();
+                  expect(identical(parent, firstScopeVm), isTrue);
+                  return secondScopeVm;
+                }),
+              ],
               child: FairyScope(
                 // Scope 3 - Level 2
-                viewModel: (locator) {
-                  // Verify can access grandparent scope
-                  final grandparent = locator.get<TestViewModel>();
-                  expect(identical(grandparent, firstScopeVm), isTrue);
-                  // Verify can access parent scope
-                  final parent = locator.get<AnotherViewModel>();
-                  expect(identical(parent, secondScopeVm), isTrue);
-                  return thirdScopeVm;
-                },
+                viewModels: [
+                  ViewModelFactory((locator) {
+                    // Verify can access grandparent scope
+                    final grandparent = locator.get<TestViewModel>();
+                    expect(identical(grandparent, firstScopeVm), isTrue);
+                    // Verify can access parent scope
+                    final parent = locator.get<AnotherViewModel>();
+                    expect(identical(parent, secondScopeVm), isTrue);
+                    return thirdScopeVm;
+                  }),
+                ],
                 child: FairyScope(
                   // Scope 4 - Level 3 (deepest)
-                  viewModel: (locator) {
-                    // Access VM from first scope (3 levels up)
-                    final fromFirstScope = locator.get<TestViewModel>();
-                    expect(identical(fromFirstScope, firstScopeVm), isTrue);
+                  viewModels: [
+                    ViewModelFactory((locator) {
+                      // Access VM from first scope (3 levels up)
+                      final fromFirstScope = locator.get<TestViewModel>();
+                      expect(identical(fromFirstScope, firstScopeVm), isTrue);
 
-                    // Access VM from second scope (2 levels up)
-                    final fromSecondScope = locator.get<AnotherViewModel>();
-                    expect(identical(fromSecondScope, secondScopeVm), isTrue);
+                      // Access VM from second scope (2 levels up)
+                      final fromSecondScope = locator.get<AnotherViewModel>();
+                      expect(
+                          identical(fromSecondScope, secondScopeVm), isTrue);
 
-                    // Access VM from third scope (1 level up)
-                    final fromThirdScope = locator.get<ThirdViewModel>();
-                    expect(identical(fromThirdScope, thirdScopeVm), isTrue);
+                      // Access VM from third scope (1 level up)
+                      final fromThirdScope = locator.get<ThirdViewModel>();
+                      expect(identical(fromThirdScope, thirdScopeVm), isTrue);
 
-                    // Create VM that depends on ancestor from first scope
-                    return ComplexViewModel(
-                        fromFirstScope,
-                        ViewModelWithDependencies(
-                            TestService(), AnotherService()));
-                  },
+                      // Create VM that depends on ancestor from first scope
+                      return ComplexViewModel(
+                          fromFirstScope,
+                          ViewModelWithDependencies(
+                              TestService(), AnotherService()));
+                    }),
+                  ],
                   child: Builder(
                     builder: (context) {
                       final data = FairyScope.of(context)!;
@@ -1178,6 +1278,138 @@ void main() {
             ),
           ),
         );
+      });
+    });
+
+    group('lazy vs eager ViewModelFactory', () {
+      testWidgets('lazy factory defers creation until first access',
+          (tester) async {
+        var createCount = 0;
+
+        await tester.pumpWidget(
+          FairyScope(
+            viewModels: [
+              ViewModelFactory((_) {
+                createCount++;
+                return TestViewModel();
+              }),
+            ],
+            child: const SizedBox(),
+          ),
+        );
+
+        // After pumpWidget, VM has NOT been created yet (lazy)
+        expect(createCount, equals(0));
+
+        // Accessing via scope data triggers creation
+        final ctx = tester.element(find.byType(SizedBox));
+        FairyScope.of(ctx)!.get<TestViewModel>();
+
+        expect(createCount, equals(1));
+
+        // Second access does not recreate
+        FairyScope.of(ctx)!.get<TestViewModel>();
+        expect(createCount, equals(1));
+      });
+
+      testWidgets('eager factory creates VM immediately at scope mount',
+          (tester) async {
+        var createCount = 0;
+
+        await tester.pumpWidget(
+          FairyScope(
+            viewModels: [
+              ViewModelFactory.eager((_) {
+                createCount++;
+                return TestViewModel();
+              }),
+            ],
+            child: const SizedBox(),
+          ),
+        );
+
+        // After pumpWidget, VM has been created eagerly
+        expect(createCount, equals(1));
+      });
+
+      testWidgets('lazy VM is owned and disposed by scope', (tester) async {
+        TestViewModel? capturedVm;
+
+        await tester.pumpWidget(
+          FairyScope(
+            viewModels: [
+              ViewModelFactory((_) {
+                capturedVm = TestViewModel();
+                return capturedVm!;
+              }),
+            ],
+            child: Builder(
+              builder: (ctx) {
+                FairyScope.of(ctx)!.get<TestViewModel>(); // trigger creation
+                return const SizedBox();
+              },
+            ),
+          ),
+        );
+
+        expect(capturedVm, isNotNull);
+        expect(capturedVm!.isDisposed, isFalse);
+
+        await tester.pumpWidget(const SizedBox());
+
+        expect(capturedVm!.isDisposed, isTrue);
+      });
+
+      testWidgets('lazy VM with autoDispose:false is not disposed by scope',
+          (tester) async {
+        TestViewModel? capturedVm;
+
+        await tester.pumpWidget(
+          FairyScope(
+            autoDispose: false,
+            viewModels: [
+              ViewModelFactory((_) {
+                capturedVm = TestViewModel();
+                return capturedVm!;
+              }),
+            ],
+            child: Builder(
+              builder: (ctx) {
+                FairyScope.of(ctx)!.get<TestViewModel>();
+                return const SizedBox();
+              },
+            ),
+          ),
+        );
+
+        await tester.pumpWidget(const SizedBox());
+
+        // Not disposed because autoDispose is false
+        expect(capturedVm!.isDisposed, isFalse);
+        capturedVm!.dispose(); // manual cleanup
+      });
+
+      testWidgets('never-accessed lazy VM is not created', (tester) async {
+        var createCount = 0;
+
+        await tester.pumpWidget(
+          FairyScope(
+            viewModels: [
+              ViewModelFactory((_) {
+                createCount++;
+                return TestViewModel();
+              }),
+            ],
+            // Child never calls get<TestViewModel>()
+            child: const SizedBox(),
+          ),
+        );
+
+        expect(createCount, equals(0));
+
+        // Remove scope — factory should not be called even during disposal
+        await tester.pumpWidget(const SizedBox());
+        expect(createCount, equals(0));
       });
     });
   });

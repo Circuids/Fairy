@@ -13,7 +13,7 @@ class TodoListApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FairyScope(
-      viewModel: (_) => TodoListViewModel(),
+      viewModels: [ViewModelFactory((_) => TodoListViewModel())],
       child: const TodoListPage(),
     );
   }

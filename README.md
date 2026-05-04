@@ -56,7 +56,7 @@ class CounterViewModel extends ObservableObject {
 // 2. Provide ViewModel with FairyScope
 void main() => runApp(
   FairyScope(
-    viewModel: (_) => CounterViewModel(),
+    viewModels: [ViewModelFactory((_) => CounterViewModel())],
     child: MyApp(),
   ),
 );
@@ -278,7 +278,7 @@ Command.param<TodoViewModel, String>(
 
 ```dart
 FairyScope(
-  viewModel: (_) => ProfileViewModel(),
+  viewModels: [ViewModelFactory((_) => ProfileViewModel())],
   child: ProfilePage(),
 )
 
@@ -288,24 +288,26 @@ final vm = Fairy.of<UserViewModel>(context);
 
 ### FairyScopeLocator - Factory Dependency Access
 
-The `FairyScopeLocator` passed to factory callbacks provides access to **both** global and scoped dependencies:
+The `FairyScopeLocator` passed to `ViewModelFactory` provides access to **both** global and scoped dependencies. The locator is valid for the full lifetime of the scope, so lazy factories can safely call `locator.get<T>()` when they are first accessed.
 
 ```dart
 FairyScope(
-  viewModel: (locator) => ProfileViewModel(
-    api: locator.get<ApiService>(),       // Global (FairyLocator)
-    appVM: locator.get<AppViewModel>(),   // Parent scope
-  ),
+  viewModels: [
+    ViewModelFactory((locator) => ProfileViewModel(
+      api: locator.get<ApiService>(),       // Global (FairyLocator)
+      appVM: locator.get<AppViewModel>(),   // Parent scope
+    )),
+  ],
   child: ProfilePage(),
 )
 
-// Multiple VMs can depend on each other
+// Multiple VMs can depend on each other (lazy factories resolve on first access)
 FairyScope(
   viewModels: [
-    (_) => UserViewModel(),
-    (locator) => SettingsViewModel(
+    ViewModelFactory((_) => UserViewModel()),
+    ViewModelFactory((locator) => SettingsViewModel(
       userVM: locator.get<UserViewModel>(),  // Same scope
-    ),
+    )),
   ],
   child: DashboardPage(),
 )

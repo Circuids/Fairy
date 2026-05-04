@@ -29,7 +29,7 @@
 ///
 /// // 2. Provide it via FairyScope
 /// FairyScope(
-///   viewModel: (_) => CounterViewModel(),
+///   viewModels: [ViewModelFactory((_) => CounterViewModel())],
 ///   child: MyApp(),
 /// )
 ///
@@ -69,7 +69,7 @@ export 'src/core/observable.dart'
 export 'src/extensions.dart' show FairyContextExtensions;
 // Dependency injection
 export 'src/locator/fairy_locator.dart' show FairyLocator;
-export 'src/locator/fairy_scope.dart' show FairyScope, FairyScopeLocator;
+export 'src/locator/fairy_scope.dart' show FairyScope, FairyScopeLocator, ViewModelFactory;
 export 'src/locator/fairy_resolver.dart' show Fairy;
 // UI binding widgets
 export 'src/ui/bind_widget.dart' show Bind;

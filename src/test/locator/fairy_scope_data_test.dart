@@ -82,7 +82,155 @@ void main() {
       });
     });
 
-    group('Dynamic Registration', () {
+    group('Lazy Registration', () {
+      test('should register lazy factory and defer creation', () {
+        final scopeData = FairyScopeData();
+        var created = false;
+
+        scopeData.registerLazy(
+          _TestViewModel,
+          () {
+            created = true;
+            return _TestViewModel();
+          },
+        );
+
+        // Not created yet
+        expect(created, isFalse);
+        expect(scopeData.contains<_TestViewModel>(), isTrue);
+
+        // Created on first get
+        scopeData.get<_TestViewModel>();
+        expect(created, isTrue);
+      });
+
+      test('should create lazy VM only once', () {
+        final scopeData = FairyScopeData();
+        var callCount = 0;
+
+        scopeData.registerLazy(
+          _TestViewModel,
+          () {
+            callCount++;
+            return _TestViewModel();
+          },
+        );
+
+        scopeData.get<_TestViewModel>();
+        scopeData.get<_TestViewModel>();
+        scopeData.get<_TestViewModel>();
+
+        expect(callCount, equals(1));
+      });
+
+      test('should dispose lazy VM when owned:true (default)', () {
+        final scopeData = FairyScopeData();
+        _TestViewModel? vm;
+
+        scopeData.registerLazy(_TestViewModel, () {
+          vm = _TestViewModel();
+          return vm!;
+        });
+
+        // Materialise the VM
+        scopeData.get<_TestViewModel>();
+
+        expect(vm, isNotNull);
+        expect(vm!.isDisposed, isFalse);
+
+        scopeData.dispose();
+
+        expect(vm!.isDisposed, isTrue);
+      });
+
+      test('should NOT dispose lazy VM when owned:false', () {
+        final scopeData = FairyScopeData();
+        _TestViewModel? vm;
+
+        scopeData.registerLazy(
+          _TestViewModel,
+          () {
+            vm = _TestViewModel();
+            return vm!;
+          },
+          owned: false,
+        );
+
+        scopeData.get<_TestViewModel>();
+        expect(vm!.isDisposed, isFalse);
+
+        scopeData.dispose();
+
+        expect(vm!.isDisposed, isFalse);
+        vm!.dispose(); // manual cleanup
+      });
+
+      test('never-accessed lazy VM is not created before disposal', () {
+        final scopeData = FairyScopeData();
+        var created = false;
+
+        scopeData.registerLazy(_TestViewModel, () {
+          created = true;
+          return _TestViewModel();
+        });
+
+        // Dispose without ever accessing
+        scopeData.dispose();
+
+        expect(created, isFalse);
+      });
+
+      test('should throw when registering duplicate lazy type', () {
+        final scopeData = FairyScopeData();
+
+        scopeData.registerLazy(_TestViewModel, () => _TestViewModel());
+
+        expect(
+          () => scopeData.registerLazy(_TestViewModel, () => _TestViewModel()),
+          throwsA(
+            isA<StateError>().having(
+              (e) => e.message,
+              'message',
+              contains('already registered'),
+            ),
+          ),
+        );
+      });
+
+      test('containsByType detects lazy factories', () {
+        final scopeData = FairyScopeData();
+
+        expect(scopeData.containsByType(_TestViewModel), isFalse);
+
+        scopeData.registerLazy(_TestViewModel, () => _TestViewModel());
+
+        expect(scopeData.containsByType(_TestViewModel), isTrue);
+      });
+
+      test('getByType materialises lazy factory', () {
+        final scopeData = FairyScopeData();
+        var created = false;
+
+        scopeData.registerLazy(_TestViewModel, () {
+          created = true;
+          return _TestViewModel();
+        });
+
+        expect(created, isFalse);
+
+        final vm = scopeData.getByType(_TestViewModel);
+
+        expect(created, isTrue);
+        expect(vm, isA<_TestViewModel>());
+      });
+
+      test('getByType returns null for unregistered type', () {
+        final scopeData = FairyScopeData();
+
+        expect(scopeData.getByType(_TestViewModel), isNull);
+      });
+    });
+
       test('should register ViewModel using runtime type', () {
         final scopeData = FairyScopeData();
         final vm = _TestViewModel();
@@ -314,6 +462,15 @@ void main() {
 
 class _TestViewModel extends ObservableObject {
   final counter = ObservableProperty<int>(0);
+
+  bool isDisposed = false;
+
+  @override
+  void dispose() {
+    if (isDisposed) return;
+    isDisposed = true;
+    super.dispose();
+  }
 }
 
 class _AnotherViewModel extends ObservableObject {

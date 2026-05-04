@@ -13,7 +13,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Scaffold(
               body: Bind.viewModel<ListViewModel>(
                 builder: (context, vm) {
@@ -59,7 +59,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Scaffold(
               body: Bind.viewModel<ListViewModel>(
                 builder: (context, vm) {
@@ -94,7 +94,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Scaffold(
               body: Bind.viewModel<NestedViewModel>(
                 builder: (context, vm) {
@@ -136,7 +136,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Scaffold(
               body: Bind.viewModel<MultiObservableViewModel>(
                 builder: (context, vm) {
@@ -187,7 +187,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Scaffold(
               body: Bind.viewModel<ConditionalViewModel>(
                 builder: (context, vm) {
@@ -237,7 +237,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Scaffold(
               body: Bind.viewModel<ComputedViewModel>(
                 builder: (context, vm) {
@@ -278,7 +278,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Scaffold(
               body: Bind.viewModel<NestedListViewModel>(
                 builder: (context, vm) {
@@ -331,7 +331,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Scaffold(
               body: Bind.viewModel<SeparatorViewModel>(
                 builder: (context, vm) {
@@ -374,7 +374,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Scaffold(
               body: Bind.viewModel<CallbackViewModel>(
                 builder: (context, vm) {
@@ -417,7 +417,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Scaffold(
               body: Bind.viewModel<AsyncViewModel>(
                 builder: (context, vm) {
@@ -451,7 +451,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Scaffold(
               body: Bind.viewModel<TimerViewModel>(
                 builder: (context, vm) {
@@ -483,7 +483,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Scaffold(
               body: Bind.viewModel<LargeListViewModel>(
                 builder: (context, vm) {

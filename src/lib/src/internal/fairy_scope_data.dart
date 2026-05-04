@@ -10,6 +10,9 @@ class _VMEntry {
   _VMEntry(this.instance, this.owned);
 }
 
+/// Pairs a lazy factory with its ownership flag so disposal respects autoDispose.
+typedef _LazyEntry = ({ObservableObject Function() factory, bool owned});
+
 /// Data holder for managing scoped ViewModels within a [FairyScope].
 ///
 /// This class maintains a local registry of ViewModels and tracks which ones
@@ -20,7 +23,7 @@ class _VMEntry {
 @internal
 class FairyScopeData {
   final Map<Type, _VMEntry> _registry = {};
-  final Map<Type, ObservableObject Function()> _lazyFactories = {};
+  final Map<Type, _LazyEntry> _lazyFactories = {};
 
   /// Exposed for backward compatibility - returns just the instances
   Map<Type, ObservableObject> get registry {
@@ -66,9 +69,14 @@ class FairyScopeData {
 
   /// Registers a lazy ViewModel factory.
   ///
-  /// The ViewModel will be created on first access via [get].
-  /// Once created, it's treated as owned and will be disposed by this scope.
-  void registerLazy(Type type, ObservableObject Function() factory) {
+  /// The ViewModel will be created on first access via [get] or [getByType].
+  /// The [owned] flag controls whether the scope disposes the ViewModel when
+  /// it is removed — this mirrors [FairyScope.autoDispose].
+  void registerLazy(
+    Type type,
+    ObservableObject Function() factory, {
+    bool owned = true,
+  }) {
     if (_registry.containsKey(type) || _lazyFactories.containsKey(type)) {
       throw StateError(
         'ViewModel of type $type is already registered in this FairyScope.\n'
@@ -76,7 +84,7 @@ class FairyScopeData {
         'If you need multiple instances, use different ViewModel classes.',
       );
     }
-    _lazyFactories[type] = factory;
+    _lazyFactories[type] = (factory: factory, owned: owned);
   }
 
   /// Retrieves a ViewModel of type [T].
@@ -84,12 +92,11 @@ class FairyScopeData {
   /// If the ViewModel was registered as lazy, it will be created on first access.
   /// Throws [StateError] if no ViewModel of type [T] is registered.
   T get<T extends ObservableObject>() {
-    // Check if lazy factory exists and create instance
+    // Materialize lazy factory on first access
     if (_lazyFactories.containsKey(T)) {
-      final factory = _lazyFactories[T]!;
-      final instance = factory();
-      _registry[T] =
-          _VMEntry(instance, true); // Lazy instances are always owned
+      final entry = _lazyFactories[T]!;
+      final instance = entry.factory();
+      _registry[T] = _VMEntry(instance, entry.owned);
       _lazyFactories.remove(T);
     }
 
@@ -114,6 +121,44 @@ class FairyScopeData {
   /// Checks if a ViewModel of type [T] is registered (either eager or lazy).
   bool contains<T extends ObservableObject>() =>
       _registry.containsKey(T) || _lazyFactories.containsKey(T);
+
+  /// Type-erased containment check (works for any [Type] value, not just
+  /// generic-bound [T]).
+  ///
+  /// Used by [FairyScopeLocatorImpl] which accepts `Object`-bounded type
+  /// parameters and needs to check both eager and lazy registrations.
+  @internal
+  bool containsByType(Type type) =>
+      _registry.containsKey(type) || _lazyFactories.containsKey(type);
+
+  /// Type-erased get that materializes lazy factories on first access.
+  ///
+  /// Returns the ViewModel instance for [type], or `null` if not found.
+  /// Used by [FairyScopeLocatorImpl] for cross-type-bound lazy resolution.
+  @internal
+  ObservableObject? getByType(Type type) {
+    // Materialize lazy factory if present
+    if (_lazyFactories.containsKey(type)) {
+      final lazyEntry = _lazyFactories[type]!;
+      final instance = lazyEntry.factory();
+      _registry[type] = _VMEntry(instance, lazyEntry.owned);
+      _lazyFactories.remove(type);
+    }
+
+    final registryEntry = _registry[type];
+    if (registryEntry == null) return null;
+
+    if (registryEntry.instance.isDisposed) {
+      throw StateError(
+        'ViewModel of type $type has been disposed and cannot be accessed.\n'
+        'This usually happens when:\n'
+        '1. FairyScope was removed from the widget tree\n'
+        '2. ViewModel was manually disposed\n'
+        '3. Widget is trying to access VM during disposal phase',
+      );
+    }
+    return registryEntry.instance;
+  }
 
   /// Disposes all ViewModels that this scope owns.
   ///

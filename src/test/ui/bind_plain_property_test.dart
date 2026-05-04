@@ -62,7 +62,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind<PlainPropertyViewModel, String>(
               bind: (vm) => vm.name, // Plain getter
               builder: (context, value, update) => Text(value),
@@ -86,7 +86,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind<PlainPropertyViewModel, int>(
               bind: (vm) => vm.age, // Plain getter
               builder: (context, value, update) => Text('Age: $value'),
@@ -110,7 +110,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind<PlainPropertyViewModel, bool>(
               bind: (vm) => vm.isActive,
               builder: (context, value, update) =>
@@ -136,7 +136,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Column(
               children: [
                 Bind<PlainPropertyViewModel, String>(
@@ -179,7 +179,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind<PlainPropertyViewModel, String>(
               bind: (vm) => vm.name,
               builder: (context, value, update) {
@@ -202,7 +202,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind<PlainPropertyViewModel, String>(
               bind: (vm) => vm.name,
               builder: (context, value, update) => Text(value),
@@ -217,7 +217,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: const SizedBox(),
           ),
         ),
@@ -236,7 +236,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind<MixedPropertyViewModel, String>(
               bind: (vm) => vm.title, // Plain property
               builder: (context, value, update) => Text('Title: $value'),
@@ -262,7 +262,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind<MixedPropertyViewModel, int>(
               bind: (vm) => vm.counter, // ObservableProperty
               builder: (context, value, update) {
@@ -297,7 +297,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind<MixedPropertyViewModel, String>(
               bind: (vm) => vm.upperTitle, // Computed from plain property
               builder: (context, value, update) => Text(value),
@@ -321,7 +321,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind<PlainPropertyViewModel, String>(
               bind: (vm) => vm.name,
               builder: (context, value, update) {
@@ -355,7 +355,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<PlainPropertyViewModel>(
               builder: (context, vm) {
                 buildCount++;
@@ -391,7 +391,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<PlainPropertyViewModel>(
               builder: (context, vm) {
                 buildCount++;
@@ -420,7 +420,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<MixedPropertyViewModel>(
               builder: (context, vm) {
                 buildCount++;
@@ -455,7 +455,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<PlainPropertyViewModel>(
               builder: (context, vm) => Text(vm.name),
             ),
@@ -469,7 +469,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: const SizedBox(),
           ),
         ),
@@ -487,7 +487,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<PlainPropertyViewModel>(
               builder: (context, vm) {
                 buildCount++;
@@ -518,7 +518,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Column(
               children: [
                 Bind.viewModel<PlainPropertyViewModel>(
@@ -564,7 +564,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<PlainPropertyViewModel>(
               builder: (context, vm) {
                 buildCount++;
@@ -595,7 +595,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<PlainPropertyViewModel>(
                 builder: (context, vm) => Text(vm.name),
               ),
@@ -610,7 +610,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: const SizedBox(),
             ),
           ),
@@ -631,7 +631,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind<PlainPropertyViewModel, String>(
               bind: (vm) => vm.name,
               builder: (context, value, update) {
@@ -663,7 +663,7 @@ void main() {
       Widget buildWidget() {
         return MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: StatefulBuilder(
               builder: (context, setState) {
                 return Column(
@@ -717,7 +717,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind<PlainPropertyViewModel, String>(
                 bind: (vm) => vm.name,
                 builder: (context, value, update) => Text(value),
@@ -733,7 +733,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: const SizedBox(),
             ),
           ),

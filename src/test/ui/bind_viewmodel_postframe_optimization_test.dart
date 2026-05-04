@@ -26,7 +26,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<SimpleViewModel>(
               builder: (context, vm) {
                 buildCount++;
@@ -65,7 +65,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<ListViewModel>(
               builder: (context, vm) {
                 return ListView.builder(
@@ -108,7 +108,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<ListViewModel>(
               builder: (context, vm) {
                 // Synchronous access
@@ -150,7 +150,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<ListViewModel>(
               builder: (context, vm) {
                 return ListView.builder(
@@ -184,7 +184,7 @@ void main() {
       Widget buildWidget() {
         return MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: StatefulBuilder(
               builder: (context, setState) {
                 return Column(
@@ -251,7 +251,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<SimpleViewModel>(
               builder: (context, vm) {
                 buildCount++;
@@ -282,7 +282,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<ListViewModel>(
               builder: (context, vm) {
                 return ListView.builder(
@@ -301,7 +301,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: const SizedBox(),
           ),
         ),
@@ -318,7 +318,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<ListViewModel>(
               builder: (context, vm) {
                 return GridView.builder(
@@ -352,7 +352,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<ListViewModel>(
               builder: (context, vm) {
                 return ListView.separated(
@@ -387,7 +387,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<SimpleViewModel>(
                 builder: (context, vm) {
                   return Text('${vm.counter.value}');
@@ -406,7 +406,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: const SizedBox(),
             ),
           ),

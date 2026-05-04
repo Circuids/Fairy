@@ -1,3 +1,47 @@
+## 4.0.0
+
+**V4 Major Release** — Lazy-by-default ViewModels via `ViewModelFactory`, improved performance, and reduced memory footprint.
+
+### Breaking Changes
+
+- **`FairyScope.viewModel` and `FairyScope.viewModels` parameters removed.** Use `FairyScope.viewModels: [ViewModelFactory(...)]` instead:
+  ```dart
+  // Before (v3):
+  FairyScope(viewModel: (locator) => MyViewModel(), child: ...)
+  FairyScope(viewModels: [(l) => A(), (l) => B()], child: ...)
+
+  // After (v4):
+  FairyScope(viewModels: [ViewModelFactory((_) => MyViewModel())], child: ...)
+  FairyScope(viewModels: [ViewModelFactory((_) => A()), ViewModelFactory((_) => B())], child: ...)
+  ```
+- **`FairyScopeLocator` is now valid for the scope's full lifetime** (not just during factory execution). This enables lazy VM factories to resolve dependencies when first accessed, but stored locators will now correctly throw only after the scope is disposed — not immediately after `initState`.
+
+### New Features
+
+- **`ViewModelFactory<T>`** — Type-safe descriptor for ViewModel construction:
+  - `ViewModelFactory(create)` — lazy (default): ViewModel is created on first `get<T>()` call (e.g. when a `Bind` or `Command` widget first renders).
+  - `ViewModelFactory.eager(create)` — eager: ViewModel is created immediately when the scope mounts (use for side-effect-heavy VMs such as those starting background tasks).
+  - The `create` function receives a `FairyScopeLocator` valid for the scope's lifetime, so lazy factories can resolve dependencies on demand.
+
+### Performance & Memory Improvements
+
+- **Lazy-by-default instantiation** reduces startup memory and CPU usage — ViewModels for routes that are never visited in a session are never allocated.
+- **Never-accessed lazy VMs are never created**, even if the scope is removed (no factory call, no allocation).
+- **`FairyScopeLocatorImpl` uses a three-tier lookup** for parent-scope resolution:
+  1. Flat map (O(1)) for already-materialised parent VMs.
+  2. Parent scope list scan (O(n)) for lazy parent VMs, with result cached in the flat map for subsequent O(1) access.
+  3. Global `FairyLocator` fallback.
+- **Weak references** in the flat map prevent retention of disposed parent-scope VMs.
+- **`_lazyFactories` stores ownership flag** alongside each factory, so `autoDispose: false` is correctly respected for lazy VMs.
+
+### Tests
+
+- Updated all `FairyScope` tests to use `ViewModelFactory`.
+- Added **lazy vs eager** test group: deferred creation, eager creation, ownership/autoDispose, never-accessed VM, and lazy VM with `autoDispose: false`.
+- Added **`FairyScopeData` lazy tests**: `registerLazy` with `owned:true`/`owned:false`, `containsByType`, `getByType`, never-accessed factory not created, duplicate type guard.
+- Updated locator lifecycle tests to reflect new invalidation-on-dispose semantics.
+- Replaced "throw if ViewModel created later" test with two new tests: lazy cross-access (now succeeds) and eager ordering constraint (still throws).
+
 ## 3.0.1
 
 ### Bug Fixes

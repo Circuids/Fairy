@@ -48,7 +48,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind<CommandSelectorTestViewModel, bool>(
                 bind: (vm) => vm.saveCommand.canExecute,
                 builder: (context, canExecute, update) {
@@ -106,7 +106,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind<CommandSelectorTestViewModel, bool>(
                 bind: (vm) => vm.fetchCommand.isRunning,
                 builder: (context, isRunning, update) {
@@ -166,7 +166,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind<CommandSelectorTestViewModel, RelayCommand>(
                 bind: (vm) => vm.saveCommand,
                 builder: (context, command, update) {
@@ -224,7 +224,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind<CommandSelectorTestViewModel, RelayCommand>(
                 bind: (vm) => vm.saveCommand,
                 builder: (context, command, update) {
@@ -269,7 +269,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind<CommandSelectorTestViewModel, RelayCommand>(
                 bind: (vm) => vm.saveCommand,
                 builder: (context, command, update) {
@@ -328,7 +328,7 @@ void main() {
               children: [
                 // Recommended: Track specific state
                 FairyScope(
-                  viewModel: (_) => vm1,
+                  viewModels: [ViewModelFactory((_) => vm1)],
                   child: Bind<CommandSelectorTestViewModel, bool>(
                     bind: (vm) => vm.saveCommand.canExecute,
                     builder: (context, canExecute, update) {
@@ -343,7 +343,7 @@ void main() {
                 ),
                 // Anti-pattern: Return command object
                 FairyScope(
-                  viewModel: (_) => vm2,
+                  viewModels: [ViewModelFactory((_) => vm2)],
                   child: Bind<CommandSelectorTestViewModel, RelayCommand>(
                     bind: (vm) => vm.saveCommand,
                     builder: (context, command, update) {
@@ -401,7 +401,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind<CommandSelectorTestViewModel, RelayCommand>(
                 bind: (vm) => vm.saveCommand,
                 builder: (context, command, update) {
@@ -431,7 +431,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Column(
                 children: [
                   // ✅ GOOD: Track canExecute state

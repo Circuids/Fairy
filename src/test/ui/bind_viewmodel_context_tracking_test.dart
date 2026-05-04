@@ -53,7 +53,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<_SharedViewModel>(
                 builder: (context, vm) {
                   buildCount++;
@@ -114,7 +114,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Column(
                 children: [
                   // Widget A — mounts FIRST, has lazy builder.
@@ -276,7 +276,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Scaffold(
                 body: Bind.viewModel<_SharedViewModel>(
                   builder: (context, vm) {
@@ -357,7 +357,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Column(
                 children: [
                   // Widget 1: reads label directly

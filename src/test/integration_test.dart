@@ -107,9 +107,11 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: FairyScope(
-              viewModel: (locator) => CounterViewModel(
-                locator.get<CounterService>(),
-              ),
+              viewModels: [
+                ViewModelFactory((locator) => CounterViewModel(
+                  locator.get<CounterService>(),
+                )),
+              ],
               child: Column(
                 children: [
                   // Two-way binding: TextField updates counter directly
@@ -286,12 +288,14 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: FairyScope(
-              viewModel: (locator) {
-                vm = CounterViewModel(
-                  locator.get<CounterService>(),
-                );
-                return vm!;
-              },
+              viewModels: [
+                ViewModelFactory((locator) {
+                  vm = CounterViewModel(
+                    locator.get<CounterService>(),
+                  );
+                  return vm!;
+                }),
+              ],
               child: Bind<CounterViewModel, int>(
                 bind: (vm) => vm.counter,
                 builder: (context, value, update) => Text('$value'),
@@ -359,9 +363,11 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: FairyScope(
-              viewModel: (locator) => CounterViewModel(
-                locator.get<CounterService>(),
-              ),
+              viewModels: [
+                ViewModelFactory((locator) => CounterViewModel(
+                  locator.get<CounterService>(),
+                )),
+              ],
               child: Column(
                 children: [
                   Bind<CounterViewModel, int>(

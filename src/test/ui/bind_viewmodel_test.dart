@@ -15,7 +15,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<TestViewModel>(
                 builder: (context, vm) => Text(vm.name.value),
               ),
@@ -33,7 +33,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<TestViewModel>(
                 builder: (context, vm) => Text(vm.name.value),
               ),
@@ -58,7 +58,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<TestViewModel>(
                 builder: (context, vm) {
                   buildCount++;
@@ -86,7 +86,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<TestViewModel>(
                 builder: (context, vm) => Text(vm.regularField),
               ),
@@ -111,7 +111,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<TestViewModel>(
                 builder: (context, vm) =>
                     Text('${vm.name.value}-${vm.age.value}'),
@@ -139,7 +139,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<TestViewModel>(
                 builder: (context, vm) {
                   buildCount++;
@@ -170,7 +170,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<TestViewModel>(
                 builder: (context, vm) {
                   if (vm.age.value > 18) {
@@ -204,7 +204,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<TestViewModel>(
                 builder: (context, vm) {
                   buildCount++;
@@ -248,7 +248,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<TestViewModel>(
                 builder: (context, vm) =>
                     Text('${vm.incrementCommand.canExecute}'),
@@ -275,7 +275,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<TestViewModel>(
                 builder: (context, vm) {
                   buildCount++;
@@ -311,7 +311,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<TestViewModel>(
                 builder: (context, vm) {
                   buildCount++;
@@ -346,7 +346,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Column(
                 children: [
                   Bind.viewModel<TestViewModel>(
@@ -380,7 +380,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Column(
                 children: [
                   Bind.viewModel<TestViewModel>(
@@ -425,7 +425,7 @@ void main() {
 
         Widget buildApp() => MaterialApp(
               home: FairyScope(
-                viewModel: (_) => vm,
+                viewModels: [ViewModelFactory((_) => vm)],
                 child: Bind.viewModel<TestViewModel>(
                   builder: (context, vm) {
                     final name = vm.name.value;
@@ -463,7 +463,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<TestViewModel>(
                 builder: (context, vm) {
                   final name = vm.name.value; // Accessed before exception
@@ -493,7 +493,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<ComputedViewModel>(
                 builder: (context, vm) => Text(vm.fullName.value),
               ),
@@ -517,7 +517,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             home: FairyScope(
-              viewModel: (_) => vm,
+              viewModels: [ViewModelFactory((_) => vm)],
               child: Bind.viewModel<TestViewModel>(
                 builder: (context, vm) => Text(vm.name.value),
               ),
@@ -732,7 +732,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<TestViewModel>(
               builder: (context, vm) {
                 buildCount++;
@@ -773,7 +773,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<TestViewModel>(
               builder: (context, vm) {
                 outerRebuilds++;
@@ -833,7 +833,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<TestViewModel>(
               builder: (context, vm) {
                 outerRebuilds++;
@@ -901,7 +901,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<TestViewModel>(
               builder: (context, vm) {
                 outerRebuilds++;
@@ -952,7 +952,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<TestViewModel>(
               builder: (context, vm) {
                 return Bind.viewModel<TestViewModel>(
@@ -997,7 +997,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<TestViewModel>(
               builder: (context, vm) {
                 // Track what gets accessed in outer builder
@@ -1050,7 +1050,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: FairyScope(
-            viewModel: (_) => vm,
+            viewModels: [ViewModelFactory((_) => vm)],
             child: Bind.viewModel<TestViewModel>(
               builder: (context, vm) {
                 outerRebuilds++;
