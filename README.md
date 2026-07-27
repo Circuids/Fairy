@@ -3,7 +3,7 @@
 
 
   [![pub package](https://img.shields.io/pub/v/fairy.svg)](https://pub.dev/packages/fairy)
-  [![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+  [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
   [![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?logo=Flutter&logoColor=white)](https://flutter.dev)
 
 </div>
@@ -12,7 +12,7 @@ A lightweight MVVM framework for Flutter with strongly-typed reactive data bindi
 
 **Simplicity over complexity** - Clean APIs, minimal boilerplate, zero dependencies.
 
-## 📖 Table of Contents
+## Table of Contents
 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
@@ -29,13 +29,13 @@ A lightweight MVVM framework for Flutter with strongly-typed reactive data bindi
 
 ## Features
 
--  **Few Widgets to Learn** - `Bind` for data, `Command` for actions
--  **Type-Safe** - Strongly-typed with compile-time safety
--  **No Code Generation** - Runtime-only, no build_runner
--  **Auto UI Updates** - Data binding that just works
--  **Command Pattern** - Actions with `canExecute` validation and error handling
--  **Dependency Injection** - Global and scoped DI
--  **Lightweight** - Zero external dependencies
+- **Few Widgets to Learn** - `Bind` for data, `Command` for actions
+- **Type-Safe** - Strongly-typed with compile-time safety
+- **No Code Generation** - Runtime-only, no build_runner
+- **Auto UI Updates** - Data binding that just works
+- **Command Pattern** - Actions with `canExecute` validation and error handling
+- **Dependency Injection** - Global and scoped DI
+- **Lightweight** - Zero external dependencies
 
 ## Installation
 
@@ -111,8 +111,8 @@ class TodoViewModel extends ObservableObject {
   final tags = ObservableProperty.set<String>({});
   
   void addTodo(Todo todo) {
-    todos.value.add(todo);       // ✅ Triggers rebuild
-    cache.value[todo.id] = todo; // ✅ Triggers rebuild
+    todos.value.add(todo);       // Triggers rebuild
+    cache.value[todo.id] = todo; // Triggers rebuild
   }
 }
 ```
@@ -457,13 +457,13 @@ void dispose() {
 }
 ```
 
-### Capture Disposers ⚠️
+### Capture Disposers
 
 ```dart
-// ❌ MEMORY LEAK
+// MEMORY LEAK
 viewModel.propertyChanged(() { });
 
-// ✅ CORRECT
+// CORRECT
 final dispose = viewModel.propertyChanged(() { });
 // Later: dispose();
 ```
@@ -498,16 +498,16 @@ late final selectCommand = AsyncRelayCommand.param<String>(
 
 - **ViewModel**: Business logic, state, commands
 - **View**: `Bind`/`Command` widgets, navigation
-- ❌ Don't create new instances in binds (causes infinite rebuilds)
+- Don't create new instances in binds (causes infinite rebuilds)
 
 ## Performance
 
 | Category | Fairy | Provider | Riverpod |
 |----------|-------|----------|----------|
-| Selective Rebuild | **100%** 🥇 | 133.5% | 131.3% |
-| Auto-tracking Rebuild | **100%** 🥇 | 133.3% | 126.1% |
+| Selective Rebuild | **100%** | 133.5% | 131.3% |
+| Auto-tracking Rebuild | **100%** | 133.3% | 126.1% |
 
-**🥇 Fastest Selective Rebuilds** - 31-34% faster with explicit binding
+**Fastest Selective Rebuilds** - 31-34% faster with explicit binding
 
 ## Testing
 
@@ -526,10 +526,10 @@ test('counter increments', () {
 
 | Feature | Fairy | Provider | Riverpod | GetX | BLoC |
 |---------|-------|----------|----------|------|------|
-| Code Generation | ❌ | ❌ | ✅ | ❌ | ❌ |
-| Command Pattern | **✅** | ❌ | ❌ | ❌ | ❌ |
-| Two-Way Binding | **✅** | ❌ | ❌ | ✅ | ❌ |
-| Auto-Disposal | **✅** | ⚠️ | ✅ | ✅ | ⚠️ |
+| Code Generation | No | No | Yes | No | No |
+| Command Pattern | **Yes** | No | No | No | No |
+| Two-Way Binding | **Yes** | No | No | Yes | No |
+| Auto-Disposal | **Yes** | Partial | Yes | Yes | Partial |
 
 ## Documentation
 
@@ -544,9 +544,9 @@ Fairy follows a **non-breaking minor version** principle:
 - **Patch versions** (v1.1.1, v2.0.1): Bug fixes and documentation updates only
 
 **Examples:**
-- ✅ v1.1, v1.2, v1.3 → All backward compatible with v1.0
-- ✅ v2.1, v2.2, v2.3 → All backward compatible with v2.0
-- ⚠️ v2.0 → May have breaking changes from v1.x (see CHANGELOG for migration guide)
+- v1.1, v1.2, v1.3 → All backward compatible with v1.0
+- v2.1, v2.2, v2.3 → All backward compatible with v2.0
+- v2.0 → May have breaking changes from v1.x (see CHANGELOG for migration guide)
 
 **Upgrade confidence:** You can safely upgrade within the same major version without code changes.
 
@@ -554,7 +554,7 @@ Fairy follows a **non-breaking minor version** principle:
 
 ## License
 
-BSD 3-Clause License - see [LICENSE](./src/LICENSE) file for details.
+Apache License 2.0 - see [LICENSE](./src/LICENSE) file for details.
 
 ## Contributing
 

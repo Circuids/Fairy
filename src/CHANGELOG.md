@@ -1,3 +1,11 @@
+## 3.0.1+1
+
+### Documentation
+
+- Removed all emojis from README and CHANGELOG for a cleaner, more professional presentation
+- Updated license from BSD 3-Clause to Apache License 2.0
+- Updated license badge in README to reflect Apache 2.0
+
 ## 3.0.1
 
 ### Bug Fixes
@@ -48,7 +56,7 @@ late final loadCommand = AsyncRelayCommand.param<String>(
 );
 ```
 
-### 🔄 Breaking Changes
+### Breaking Changes
 
 #### 1. `Command.param<VM, T>()` is now the preferred API for parameterized command widgets
 
@@ -100,12 +108,12 @@ The V2 design had a critical flaw: the `parameter` callback was evaluated at **b
 ```dart
 // V2 Problem - Can't pass values from onSelectionChanged!
 SegmentedButton<TabType>(
-  onSelectionChanged: (values) => execute,  // ❌ No way to pass values.first!
+  onSelectionChanged: (values) => execute,  // No way to pass values.first!
 )
 
 // V3 Solution - Pass parameter at execution time
 SegmentedButton<TabType>(
-  onSelectionChanged: (values) => execute(values.first),  // ✅ Works!
+  onSelectionChanged: (values) => execute(values.first),  // Works!
 )
 ```
 
@@ -133,7 +141,7 @@ Command.param<TabViewModel, TabType>(
     return SegmentedButton<TabType>(
       segments: [...],
       selected: {vm.selectedTab.value},
-      onSelectionChanged: (values) => execute(values.first),  // ✅ Dynamic!
+      onSelectionChanged: (values) => execute(values.first),  // Dynamic!
     );
   },
 )
@@ -149,7 +157,7 @@ Command.param<TabViewModel, TabType>(
 | Param builder `execute` | `VoidCallback` | `void Function(TParam)` |
 | Param builder `canExecute` | `bool` | `bool Function(TParam)` |
 | `parameter` callback | Required | Removed |
-| Dynamic UI values | ❌ Impossible | ✅ Supported |
+| Dynamic UI values | Impossible | Supported |
 
 ### Testing
 
@@ -158,7 +166,7 @@ Command.param<TabViewModel, TabType>(
 - All parameterized command tests updated for new API
 - Integration tests validated
 
-### 💡 Migration Effort
+### Migration Effort
 
 **Small projects:** 5-10 minutes  
 **Medium projects:** 15-20 minutes  
@@ -188,18 +196,18 @@ Added typed factory constructors for `ObservableProperty` that enable UI updates
 ```dart
 // List with mutation notifications
 final todos = ObservableProperty.list<Todo>([]);
-todos.value.add(newTodo);       // ✅ Triggers rebuild automatically!
-todos.value.remove(oldTodo);    // ✅ Triggers rebuild automatically!
+todos.value.add(newTodo);       // Triggers rebuild automatically!
+todos.value.remove(oldTodo);    // Triggers rebuild automatically!
 
 // Map with mutation notifications
 final cache = ObservableProperty.map<String, Data>({});
-cache.value['key'] = data;      // ✅ Triggers rebuild automatically!
-cache.value.remove('key');      // ✅ Triggers rebuild automatically!
+cache.value['key'] = data;      // Triggers rebuild automatically!
+cache.value.remove('key');      // Triggers rebuild automatically!
 
 // Set with mutation notifications
 final tags = ObservableProperty.set<String>({});
-tags.value.add('flutter');      // ✅ Triggers rebuild automatically!
-tags.value.remove('dart');      // ✅ Triggers rebuild automatically!
+tags.value.add('flutter');      // Triggers rebuild automatically!
+tags.value.remove('dart');      // Triggers rebuild automatically!
 ```
 
 **Key features:**
@@ -262,7 +270,7 @@ tags.value.remove('dart');      // ✅ Triggers rebuild automatically!
 
 **V2 Major Release** - Cleaner API with better error handling and simplified dependency injection.
 
-### 🔄 Breaking Changes
+### Breaking Changes
 
 #### 1. Bind Widget: `selector:` → `bind:` Parameter
 
@@ -372,7 +380,7 @@ Bind<LoginViewModel, String?>(
 - Selective Rebuilds: 100% baseline (31-34% faster than Provider/Riverpod)
 - Auto-tracking: 100% baseline (26-33% faster than Provider/Riverpod)
 
-### 💡 Migration Effort
+### Migration Effort
 
 **Small projects (< 10 files):** 10-15 minutes  
 **Medium projects (10-50 files):** 20-30 minutes  
@@ -385,7 +393,7 @@ Bind<LoginViewModel, String?>(
 4. Optionally add error handling where needed
 
 
-### 📅 Release & Support
+### Release & Support
 
 **Introduced formal versioning policy:** Fairy now follows a non-breaking minor version principle with clear support cadence. See README for full details on version compatibility and support policy.
 
@@ -395,7 +403,7 @@ Bind<LoginViewModel, String?>(
 
 **Auto-Tracking for Commands** - Commands now automatically track when accessed in `Bind.viewModel`, enabling reactive UI updates without explicit `Command` widget usage.
 
-### ✨ New Features
+### New Features
 
 - **Command.canExecute auto-tracking** - All command `canExecute` getters/methods now report access to `DependencyTracker`
   - `RelayCommand.canExecute` getter automatically tracked
@@ -404,13 +412,13 @@ Bind<LoginViewModel, String?>(
   - `AsyncRelayCommandWithParam<T>.canExecute(param)` method automatically tracked
   - Impact: `Bind.viewModel` now rebuilds when `notifyCanExecuteChanged()` is called, even without using `Command` widget
 
-### 🎯 Benefits
+### Benefits
 
 **Before (v1.3.x):**
 ```dart
 Bind.viewModel<MyViewModel>(
   builder: (context, vm) {
-    // ❌ This won't rebuild when canExecute changes!
+    // This won't rebuild when canExecute changes!
     return ElevatedButton(
       onPressed: vm.saveCommand.canExecute ? vm.saveCommand.execute : null,
       child: Text('Save'),
@@ -423,7 +431,7 @@ Bind.viewModel<MyViewModel>(
 ```dart
 Bind.viewModel<MyViewModel>(
   builder: (context, vm) {
-    // ✅ Automatically rebuilds when canExecute changes!
+    // Automatically rebuilds when canExecute changes!
     return ElevatedButton(
       onPressed: vm.saveCommand.canExecute ? vm.saveCommand.execute : null,
       child: Text('Save'),
@@ -432,21 +440,21 @@ Bind.viewModel<MyViewModel>(
 )
 ```
 
-### 📝 Migration Guide
+### Migration Guide
 
 **No code changes required!** This is fully backward compatible:
 
-- ✅ Existing `Command` widget usage → Works exactly the same
-- ✅ Direct command access in `Bind.viewModel` → Now auto-tracks (was broken before)
-- ✅ Direct command `execute()` calls → Works exactly the same
+- Existing `Command` widget usage → Works exactly the same
+- Direct command access in `Bind.viewModel` → Now auto-tracks (was broken before)
+- Direct command `execute()` calls → Works exactly the same
 
-### 🧪 Testing
+### Testing
 
 - Added 7 comprehensive tests for command auto-tracking in `Bind.viewModel`
 - Added 6 tests for command selector patterns and edge cases
 - All 565 tests passing
 
-### 📊 Performance
+### Performance
 
 - Improved benchmark methodology with noise reduction (warm-up + median of 5 measurements)
 - **Rebuild Performance**: 24-32% faster than Provider/Riverpod with auto-tracking
@@ -465,7 +473,7 @@ Bind.viewModel<MyViewModel>(
 
 **Documentation Refinement** - Improved clarity and completeness of binding patterns and disposal utilities.
 
-### 📚 Documentation
+### Documentation
 
 - **Enhanced binding examples** - Added one-way binding example alongside two-way in Data Binding section
 - **Clarified binding patterns** - Corrected misleading statement about one-way binding requiring manual notifications
@@ -484,16 +492,16 @@ Bind.viewModel<MyViewModel>(
 
 **Documentation Overhaul & Regression Fix** - Comprehensive README improvements and restores plain property binding support from v1.2.0.
 
-### 🐛 Bug Fixes
+### Bug Fixes
 
 - **Fixed**: Plain property getters with `onPropertyChanged()` now properly trigger UI rebuilds
   - Issue: After v1.3.0, bindings using plain getters (e.g., `selector: (vm) => vm.message` where `message` is a regular property) stopped rebuilding
   - Solution: Restored ViewModel subscription fallback for plain properties while preserving v1.3.0's ObservableProperty tracking
   - Impact: Both ObservableProperty and plain property patterns now work correctly
 
-### 📚 Documentation
+### Documentation
 
-- **Improved README structure** - Reduced from 1341 to ~520 lines (61% more compact)
+- **Improved README structure** - Reduced from 1341 to ~520 lines (61% more compact
 - **Added Quick Reference tables** - Properties, Commands, and Widget types at a glance
 - **Added Common Patterns section** - 4 practical copy-paste examples (form validation, list operations, loading states, dynamic canExecute)
 - **Added Performance benchmarks** - Comparative analysis with Provider and Riverpod
@@ -502,7 +510,7 @@ Bind.viewModel<MyViewModel>(
 - **Fixed Bind.viewModel2/3/4 documentation** - Correctly described as multi-ViewModel binding
 - **Corrected `Bind.observer` references** to `Bind.viewModel` in API documentation
 
-### 🧪 Testing
+### Testing
 
 - Added 21 tests for plain property binding patterns
 - Total: 543 tests passing (up from 522 in v1.3.0)
@@ -520,7 +528,7 @@ Bind.viewModel<MyViewModel>(
 
 This release fixes a critical bug where one-way bindings with `.value` access didn't trigger UI rebuilds, and adds comprehensive tuple binding support with clear documentation of limitations.
 
-### 🐛 Bug Fixes
+### Bug Fixes
 
 #### One-Way Binding Rebuild Issue (Critical)
 - **Fixed**: One-way bindings now properly rebuild when ObservableProperty values change
@@ -536,14 +544,14 @@ This release fixes a critical bug where one-way bindings with `.value` access di
   - Re-tracks dependencies on each change for dynamic selector patterns
   - Proper cleanup of all tracked listeners on disposal
 
-### 🧪 Testing Enhancements
+### Testing Enhancements
 
 #### Comprehensive Tuple Binding Tests
 - **Added 17 new tests** for tuple selector patterns covering all scenarios
-  - ✅ **8 tests**: Tuples with `.value` access (all working correctly)
-  - ✅ **4 tests**: Two-way binding without `.value` for non-tuple cases
-  - ✅ **4 tests**: Tuples without `.value` (correctly throwing TypeError to document limitation)
-  - ✅ **1 test**: Documentation explaining technical reasons for tuple limitations
+  - **8 tests**: Tuples with `.value` access (all working correctly)
+  - **4 tests**: Two-way binding without `.value` for non-tuple cases
+  - **4 tests**: Tuples without `.value` (correctly throwing TypeError to document limitation)
+  - **1 test**: Documentation explaining technical reasons for tuple limitations
 
 #### Memory Leak Prevention Tests
 - **Added 8 comprehensive tests** validating proper disposal and cleanup
@@ -562,18 +570,18 @@ This release fixes a critical bug where one-way bindings with `.value` access di
   - Shallow equality with new list instances
   - Proper understanding of deepEquality parameter behavior
 
-### 📚 Documentation Improvements
+### Documentation Improvements
 
 #### Tuple Binding Patterns
 - **Documented valid tuple patterns**: All tuple items must use `.value`
   ```dart
-  // ✅ VALID
+  // VALID
   Bind<VM, (int, String)>(
     selector: (vm) => (vm.counter.value, vm.message.value),
     builder: (context, tuple, update) => ...
   )
   
-  // ❌ INVALID - Will throw TypeError
+  // INVALID - Will throw TypeError
   Bind<VM, (int, String)>(
     selector: (vm) => (vm.counter, vm.message),  // ObservableProperty instances
     builder: (context, tuple, update) => ...
@@ -587,18 +595,18 @@ This release fixes a critical bug where one-way bindings with `.value` access di
   - Supporting this would require runtime type introspection and recursive unwrapping
   - Clear error messages guide developers to correct usage
 
-### 🎯 Test Suite Status
+### Test Suite Status
 - **Total Tests**: 505 tests (up from 497)
   - +8 tests for tuple binding scenarios
   - +8 tests for memory leak prevention
   - +4 tests for list binding patterns
 - **All Tests Passing**: 100% pass rate
 
-### 📦 Breaking Changes
+### Breaking Changes
 
 None - This is a backward-compatible bug fix release.
 
-### 💡 Migration Guide
+### Migration Guide
 
 No migration needed. This release fixes existing functionality without API changes. If you were experiencing issues with one-way bindings not updating, they will now work correctly.
 
@@ -610,7 +618,7 @@ No migration needed. This release fixes existing functionality without API chang
 
 This release introduces intelligent dependency tracking for deferred callbacks (ListView.builder) and significantly improves rebuild performance for `Bind.viewModel` API.
 
-### 🚀 New Features
+### New Features
 
 #### Enhanced Dependency Tracker
 - **Lazy builder support** - Automatic tracking for deferred callbacks like `ListView.builder`
@@ -618,7 +626,7 @@ This release introduces intelligent dependency tracking for deferred callbacks (
   - Stack-based primary tracking with context-based fallback for deferred execution
   - Zero-configuration - works automatically with all lazy builders
 
-### ⚡ Performance Improvements
+### Performance Improvements
 
 #### Benchmark Results (5-run average)
 - **Memory Management**: Fastest cleanup (100% baseline, 0.5% faster than Riverpod, 6.7% faster than Provider)
@@ -626,12 +634,12 @@ This release introduces intelligent dependency tracking for deferred callbacks (
 - **Auto-binding**: 0.9-3.9% faster with 100% rebuild efficiency
 - **Widget Performance**: Within 1.8% of fastest framework
 
-### 🎯 Key Achievements
+### Key Achievements
 - **3 Gold Medals** in memory management, selective rebuilds, and auto-binding
 - **100% Rebuild Efficiency** - Only framework achieving perfect selectivity vs 33% for Provider/Riverpod
 - **Reliable Results** - Stable averages with engine warm-up for consistent measurements
 
-### 📦 Breaking Changes
+### Breaking Changes
 
 None - This is a backward-compatible enhancement release.
 
@@ -643,7 +651,7 @@ None - This is a backward-compatible enhancement release.
 
 This release focuses on improving developer experience through clearer documentation and ensuring robust FairyScope behavior with deep widget tree hierarchies.
 
-### 📚 Documentation Improvements
+### Documentation Improvements
 
 #### Enhanced Code Examples
 - **Disposer naming convention** updated across all examples
@@ -657,7 +665,7 @@ This release focuses on improving developer experience through clearer documenta
 - Shows complete lifecycle management including dispose() override
 - Makes the comparison with ComputedProperty even more compelling (28 lines vs 10 lines)
 
-### 🧪 Testing Enhancements
+### Testing Enhancements
 
 #### Deep Nesting Test Coverage
 - **Added 4-level FairyScope nesting test** to ensure robust hierarchical dependency resolution
@@ -666,7 +674,7 @@ This release focuses on improving developer experience through clearer documenta
   - Validates identity preservation across deep scope hierarchies
   - **443 tests passing** (up from 442)
 
-### 📦 Version Bump
+### Version Bump
 
 - Updated version to **1.1.2** across all package files
 - No breaking changes - fully backward compatible
@@ -679,7 +687,7 @@ This release focuses on improving developer experience through clearer documenta
 
 This release addresses a critical memory leak in `ComputedProperty` and introduces a cleaner, more explicit API that makes memory safety impossible to miss.
 
-### 🔒 Memory Leak Fix
+### Memory Leak Fix
 
 #### ComputedProperty Required Parent Parameter
 - **Parent parameter is now required and positional** for `ComputedProperty`
@@ -696,12 +704,12 @@ ComputedProperty creates circular references with its dependencies:
 - Without disposal, this cycle prevents garbage collection
 
 The required parent parameter ensures:
-- ✅ **Deterministic disposal** - no magic, no finalizers needed
-- ✅ **Zero memory leaks** - impossible to forget disposal
-- ✅ **Explicit is better than implicit** - follows Dart/Flutter philosophy
-- ✅ **Compile-time safety** - errors caught at compile time, not runtime
+- **Deterministic disposal** - no magic, no finalizers needed
+- **Zero memory leaks** - impossible to forget disposal
+- **Explicit is better than implicit** - follows Dart/Flutter philosophy
+- **Compile-time safety** - errors caught at compile time, not runtime
 
-### 🔧 API Improvements
+### API Improvements
 
 #### Simplified ComputedProperty API
 ```dart
@@ -718,21 +726,21 @@ class UserViewModel extends ObservableObject {
 }
 ```
 
-### 📚 Documentation Updates
+### Documentation Updates
 
 - Updated all examples to show required parent parameter
 - Enhanced ComputedProperty documentation with memory leak prevention
 - Updated README with new syntax
 - Clarified when parent parameter is needed
 
-### 🧪 Testing
+### Testing
 
 - **442 tests** passing (unchanged)
 - Updated 6 parent-child disposal tests
 - Removed tests for optional parent behavior
 - Added test for post-disposal protection
 
-### 💡 Migration Guide
+### Migration Guide
 
 Update all `ComputedProperty` instances to include the parent parameter:
 
@@ -761,7 +769,7 @@ This change applies to all ComputedProperty instances in your ViewModels. The co
 
 This release focuses on robustness and developer experience with comprehensive improvements to lifecycle management across the framework. All components now provide clearer disposal semantics and better error messages.
 
-### 🔄 Lifecycle & Disposal Improvements
+### Lifecycle & Disposal Improvements
 
 #### Enhanced Disposal Safety
 - **ObservableObject** now properly extends `ObservableNode` with improved lifecycle management
@@ -802,7 +810,7 @@ Consider unregistering disposed ViewModels:
   - Better documentation with corrected class names in examples
   - Cleaner code with reduced redundancy
 
-### 📚 Documentation Enhancements
+### Documentation Enhancements
 
 #### ComputedProperty Documentation
 - **Comprehensive Documentation**: Dramatically improved docs showing real-world value
@@ -819,7 +827,7 @@ Consider unregistering disposed ViewModels:
   - Links to comprehensive README for detailed examples
   - Better balance between inline docs and external documentation
 
-### 🧪 Testing
+### Testing
 
 - **436 tests** passing (up from 401)
 - Added **35+ new disposal and lifecycle tests**:
@@ -829,7 +837,7 @@ Consider unregistering disposed ViewModels:
   - Enhanced error handling tests
   - Comprehensive lifecycle edge case coverage
 
-### 🔧 API Improvements
+### API Improvements
 
 #### ObservableNode
 - Added `clearListeners()` method for explicit listener cleanup
@@ -841,15 +849,15 @@ Consider unregistering disposed ViewModels:
 - Actionable guidance in StateError exceptions
 - Better troubleshooting information for common issues
 
-### 📦 Breaking Changes
+### Breaking Changes
 
 None - This is a backward-compatible enhancement release.
 
-### 🎯 Migration Guide
+### Migration Guide
 
 No migration needed. All changes are internal improvements and additions that enhance existing functionality without breaking existing code.
 
-### 💡 Developer Experience
+### Developer Experience
 
 This release significantly improves the debugging experience:
 - Disposed ViewModels are caught early with clear error messages
@@ -859,13 +867,13 @@ This release significantly improves the debugging experience:
 
 ---
 
-## 1.0.0 🎉
+## 1.0.0
 
 **Stable Release** - A lightweight MVVM framework for Flutter with strongly-typed, reactive data binding.
 
 This release consolidates all improvements from RC builds (rc.1, rc.2, rc.3) into a stable production-ready package.
 
-### ✨ New Features
+### New Features
 
 #### Async Command Execution State Tracking
 - **`isRunning` property** added to async commands for automatic execution state tracking
@@ -916,7 +924,7 @@ This release consolidates all improvements from RC builds (rc.1, rc.2, rc.3) int
   - Primitive types use `==`, collections use deep equality automatically
   - Override `==` operator is **optional** for custom types
 
-### 🔄 Breaking Changes
+### Breaking Changes
 
 #### Command.param Parameter Type Change
 - **BREAKING**: `Command.param` parameter changed from static `TParam` to function `TParam Function()`
@@ -945,16 +953,16 @@ This release consolidates all improvements from RC builds (rc.1, rc.2, rc.3) int
   - **After**: `RelayCommand(execute, canExecute: ...)`
   - **Reason**: Auto-disposal makes parent tracking unnecessary
 
-### 🚀 Performance Improvements
+### Performance Improvements
 
 Comprehensive benchmarks show exceptional performance achievements:
-- **🥇 Memory Management**: Highly optimized cleanup and disposal system
-- **🥇 Selective Rebuilds**: Exceptional performance with explicit `Bind` selectors
-- **🥇 Auto-Binding Performance**: `Bind.viewModel` delivers superior speed while maintaining perfect selectivity
+- **Memory Management**: Highly optimized cleanup and disposal system
+- **Selective Rebuilds**: Exceptional performance with explicit `Bind` selectors
+- **Auto-Binding Performance**: `Bind.viewModel` delivers superior speed while maintaining perfect selectivity
 - **Unique Achievement**: 100% rebuild efficiency with `Bind.viewModel` - only rebuilds when accessed properties change
 - Deep equality optimized with fast-path `identical()` checks and efficient recursive comparison
 
-### 📚 Documentation
+### Documentation
 
 - Comprehensive "Learn just 2 widgets" positioning (`Bind` and `Command`)
 - Added examples for all new features: `isRunning`, `FairyBridge`, `Bind.viewModel`, `Command.param`
@@ -965,7 +973,7 @@ Comprehensive benchmarks show exceptional performance achievements:
 - Complete API reference in llms.txt
 - Added benchmark results demonstrating performance leadership
 
-### 🧪 Testing
+### Testing
 
 - **401 tests** passing with comprehensive coverage
 - Tests for async command execution state tracking
@@ -975,7 +983,7 @@ Comprehensive benchmarks show exceptional performance achievements:
 - Tests for recursive deep equality (43 comprehensive tests)
 - All breaking changes validated with updated tests
 
-### 🎯 Framework Philosophy
+### Framework Philosophy
 
 - **"Learn just 2 widgets"**: `Bind` for data, `Command` for actions
 - **No code generation**: Zero build_runner dependency
@@ -988,7 +996,7 @@ Comprehensive benchmarks show exceptional performance achievements:
 
 ## 1.0.0-rc.3
 
-### ✨ New Features
+### New Features
 
 #### Async Command Execution State Tracking
 - **`isRunning` property** added to async commands for automatic execution state tracking
@@ -1058,7 +1066,7 @@ void _showDialog(BuildContext context) {
 }
 ```
 
-### 🔄 Breaking Changes
+### Breaking Changes
 
 #### Command.param Parameter Type Change
 - **BREAKING**: `Command.param` parameter changed from static `TParam` to function `TParam Function()`
@@ -1093,14 +1101,14 @@ ValueListenableBuilder<TextEditingValue>(
   - Applies to both `Command<TViewModel>` and `Command.param<TViewModel, TParam>`
   - `isRunning` is always present but only meaningful for async commands (false for sync)
 
-### 🧪 Testing
+### Testing
 
 - **401 tests** passing
 - Updated 5 tests for new concurrent execution prevention behavior
 - Added tests for `isRunning` state tracking
 - Added tests for Command widget `isRunning` parameter
 
-#### 📚 Documentation
+#### Documentation
 
 - Added comprehensive examples for `isRunning` usage
 - Added `FairyBridge` widget documentation and examples
@@ -1112,7 +1120,7 @@ ValueListenableBuilder<TextEditingValue>(
 
 ## 1.0.0-rc.2
 
-### ✨ New Features
+### New Features
 
 #### Recursive Deep Equality for Collections
 - **Built-in recursive deep equality** for all collection types without external dependencies
@@ -1128,7 +1136,7 @@ ValueListenableBuilder<TextEditingValue>(
 - **Hash methods**: `listHash`, `mapHash`, `setHash` for consistent hash codes
 - **`Equals.deepEquals<T>()`**: Factory method for `ObservableProperty` equality parameter
 
-### 🔧 API Enhancements
+### API Enhancements
 
 #### ObservableProperty Deep Equality
 - **`deepEquality: bool`** parameter (default: `true`) for automatic collection comparison
@@ -1136,7 +1144,7 @@ ValueListenableBuilder<TextEditingValue>(
   - Collections: `ObservableProperty<List<int>>([1, 2, 3])` - uses deep equality
   - Custom types: Override `==` operator is **optional** (only needed for value-based equality)
 
-### 📚 Developer Experience
+### Developer Experience
 
 #### Optional Equality Override
 - **Simplified workflow**: No need to override `==` for custom types with collections
@@ -1147,7 +1155,7 @@ ValueListenableBuilder<TextEditingValue>(
 ```dart
 // Works automatically without custom ==
 final todos = ObservableProperty<List<String>>(['Task 1', 'Task 2']);
-todos.value = ['Task 1', 'Task 2'];  // ✅ No rebuild - deep equality
+todos.value = ['Task 1', 'Task 2'];  // No rebuild - deep equality
 
 // Custom type - override == is optional
 class Project {
@@ -1164,7 +1172,7 @@ class Project {
 }
 ```
 
-### 🧪 Testing
+### Testing
 
 - **387 tests** passing (up from 344)
 - Added **43 comprehensive deep equality tests**:
@@ -1176,7 +1184,7 @@ class Project {
   - Nested custom types containing collections
   - Performance and memory tests
 
-### 🚀 Performance
+### Performance
 
 - Deep equality optimized with fast-path `identical()` checks
 - Recursive comparison with efficient callback pattern
@@ -1187,11 +1195,11 @@ class Project {
 
 ## 1.0.0-rc.1
 
-### 🎉 Major Release Candidate
+### Major Release Candidate
 
 This release represents a major milestone with significant API improvements, enhanced performance, and comprehensive testing.
 
-### ✨ New Features
+### New Features
 
 #### UI Widgets API Enhancement
 - **`Bind.viewModel<TViewModel>`**: New factory constructor for automatic property tracking
@@ -1204,7 +1212,7 @@ This release represents a major milestone with significant API improvements, enh
   - Simplifies parameterized command binding in UI
   - Completes the "2 widgets" framework positioning
 
-### 🔄 Breaking Changes
+### Breaking Changes
 
 #### Removed Extensions
 - **BREAKING**: Removed `ObservableObjectExtensions` for creating properties/commands
@@ -1224,15 +1232,15 @@ This release represents a major milestone with significant API improvements, enh
   - **Reason**: Auto-disposal makes parent tracking unnecessary
   - **Migration**: Remove `parent: this` from all command instantiations
 
-### 🚀 Performance Improvements
+### Performance Improvements
 
 Comprehensive benchmarks show significant performance achievements:
-- **🥇 Memory Management**: Highly optimized cleanup and disposal system
-- **🥇 Selective Rebuilds**: Exceptional performance with explicit `Bind` selectors
-- **🥇 Auto-tracking Performance**: `Bind.viewModel` delivers superior speed while maintaining perfect selectivity
+- **Memory Management**: Highly optimized cleanup and disposal system
+- **Selective Rebuilds**: Exceptional performance with explicit `Bind` selectors
+- **Auto-tracking Performance**: `Bind.viewModel` delivers superior speed while maintaining perfect selectivity
 - **Unique Achievement**: 100% rebuild efficiency with `Bind.viewModel` - only rebuilds when accessed properties change
 
-### 📚 Documentation Improvements
+### Documentation Improvements
 
 - Updated all examples to use direct type constructors
 - Added comprehensive `Bind.viewModel` usage examples
@@ -1241,14 +1249,14 @@ Comprehensive benchmarks show significant performance achievements:
 - Enhanced best practices section with memory leak warnings
 - Added benchmark results to main README
 
-### 🧪 Testing
+### Testing
 
 - **344 tests** passing (up from 299)
 - Added comprehensive tests for new `Bind.viewModel` functionality
 - Added tests for `Command.param` factory constructor
 - All existing functionality validated with updated API
 
-### 📦 What's Next
+### What's Next
 
 The 1.0.0 stable release is planned after community feedback on this RC. Please report any issues or suggestions!
 
@@ -1329,7 +1337,7 @@ Initial release of Fairy - A lightweight MVVM framework for Flutter.
 
 ### Best Practices
 
-- ⚠️ **Memory Leak Prevention**: Always capture disposer from manual `propertyChanged()` and `canExecuteChanged()` calls
+- **Memory Leak Prevention**: Always capture disposer from manual `propertyChanged()` and `canExecuteChanged()` calls
 - Pass `parent: this` to properties, commands, and computed properties for auto-disposal
 - Nested ViewModels require explicit manual disposal
 - Call `command.notifyCanExecuteChanged()` when `canExecute` dependencies change
