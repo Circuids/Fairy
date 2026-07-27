@@ -13,9 +13,9 @@ flutter test lib/benchmark.dart
 ## Results
 
 The benchmarks compare three frameworks:
-- **🧚 Fairy**: Our lightweight MVVM framework
-- **📦 Provider**: Popular state management solution  
-- **🏗️ Riverpod**: Modern reactive framework
+- **Fairy**: Our lightweight MVVM framework
+- **Provider**: Popular state management solution  
+- **Riverpod**: Modern reactive framework
 
 ### Latest Results (v3.0.1)
 
@@ -23,10 +23,10 @@ Performance metrics (median of 5 measurements per test, averaged across 5 comple
 
 | Category | Fairy | Provider | Riverpod | Winner |
 |----------|-------|----------|----------|---------|
-| Widget Performance (1000 interactions) | 116.5% | 104.9% | 100% | Riverpod 🥇 |
-| Memory Management (50 cycles) | 113.9% | 105.1% | 100% | Riverpod 🥇 |
-| Selective Rebuild (explicit Bind) | 100% | 138.3% | 130.2% | Fairy 🥇 |
-| Auto-tracking Rebuild (Bind.viewModel) | 100% | 132.4% | 124.5% | Fairy 🥇 |
+| Widget Performance (1000 interactions) | 116.5% | 104.9% | 100% | Riverpod |
+| Memory Management (50 cycles) | 113.9% | 105.1% | 100% | Riverpod |
+| Selective Rebuild (explicit Bind) | 100% | 138.3% | 130.2% | Fairy |
+| Auto-tracking Rebuild (Bind.viewModel) | 100% | 132.4% | 124.5% | Fairy |
 
 **Key Highlights:**
 - **Selective Rebuilds**: Fairy is 30-38% faster (22-23ms vs 30-32ms)

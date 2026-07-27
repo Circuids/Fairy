@@ -6,7 +6,7 @@ A lightweight MVVM framework for Flutter with strongly-typed reactive data bindi
 
 **Simplicity over complexity** - Clean APIs, minimal boilerplate, zero dependencies.
 
-## 📖 Table of Contents
+## Table of Contents
 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
@@ -23,13 +23,13 @@ A lightweight MVVM framework for Flutter with strongly-typed reactive data bindi
 
 ## Features
 
-- 🎓 **Few Widgets to Learn** - `Bind` for data, `Command` for actions
-- 🎯 **Type-Safe** - Strongly-typed with compile-time safety
-- ✨ **No Code Generation** - Runtime-only, no build_runner
-- 🔄 **Auto UI Updates** - Data binding that just works
-- ⚡ **Command Pattern** - Actions with `canExecute` validation and error handling
-- 🏗️ **Dependency Injection** - Global and scoped DI
-- 📦 **Lightweight** - Zero external dependencies
+- **Few Widgets to Learn** - `Bind` for data, `Command` for actions
+- **Type-Safe** - Strongly-typed with compile-time safety
+- **No Code Generation** - Runtime-only, no build_runner
+- **Auto UI Updates** - Data binding that just works
+- **Command Pattern** - Actions with `canExecute` validation and error handling
+- **Dependency Injection** - Global and scoped DI
+- **Lightweight** - Zero external dependencies
 
 ## Installation
 
@@ -106,12 +106,12 @@ class TodoViewModel extends ObservableObject {
   final tags = ObservableProperty.set<String>({});
   
   void addTodo(Todo todo) {
-    todos.value.add(todo);       // ✅ Triggers rebuild
-    cache.value[todo.id] = todo; // ✅ Triggers rebuild
+    todos.value.add(todo);       // Triggers rebuild
+    cache.value[todo.id] = todo; // Triggers rebuild
   }
   
   void removeTag(String tag) {
-    tags.value.remove(tag);      // ✅ Triggers rebuild
+    tags.value.remove(tag);      // Triggers rebuild
   }
 }
 ```
@@ -366,10 +366,10 @@ Command.param<TodoViewModel, String>(
 ### FairyScope - Widget-Scoped DI
 
 **Key capabilities:**
-- ✅ **Multiple scopes**: Use `FairyScope` multiple times in widget tree - each creates independent scope
-- ✅ **Nestable**: Child scopes can access parent scope ViewModels via `Fairy.of<T>(context)`
-- ✅ **Per-page ViewModels**: Ideal pattern - wrap each page/route with `FairyScope` for automatic lifecycle
-- ✅ **Resolution order**: Searches nearest `FairyScope` first, then parent scopes, finally `FairyLocator`
+- **Multiple scopes**: Use `FairyScope` multiple times in widget tree - each creates independent scope
+- **Nestable**: Child scopes can access parent scope ViewModels via `Fairy.of<T>(context)`
+- **Per-page ViewModels**: Ideal pattern - wrap each page/route with `FairyScope` for automatic lifecycle
+- **Resolution order**: Searches nearest `FairyScope` first, then parent scopes, finally `FairyLocator`
 
 ```dart
 // Single ViewModel per page (recommended pattern)
@@ -735,7 +735,7 @@ Properties and commands are auto-disposed with parent ViewModels. **Exception:**
 ```dart
 class ParentViewModel extends ObservableObject {
   final data = ObservableProperty<String>('');
-  late final childVM = ChildViewModel();  // ⚠️ Manual disposal required
+  late final childVM = ChildViewModel();  // Manual disposal required
   
   @override
   void dispose() {
@@ -764,20 +764,20 @@ class MyViewModel extends ObservableObject {
 }
 ```
 
-### Capture Disposers ⚠️
+### Capture Disposers
 
 Manual listeners **must** be disposed to avoid memory leaks:
 
 ```dart
-// ❌ MEMORY LEAK
+// MEMORY LEAK
 viewModel.propertyChanged(() { print('changed'); });
 
-// ✅ CORRECT
+// CORRECT
 late VoidCallback dispose;
 dispose = viewModel.propertyChanged(() { print('changed'); });
 // Later: dispose();
 
-// ✅ BEST: Use Bind/Command widgets (auto-managed)
+// BEST: Use Bind/Command widgets (auto-managed)
 ```
 
 ### Fast Command Actions
@@ -809,17 +809,17 @@ late final selectCommand = AsyncRelayCommand.param<String>(
 ### Architecture Guidelines
 
 **ViewModel:**
-- ✅ Business logic, state (ObservableProperty), commands, derived values (ComputedProperty)
-- ❌ Reference BuildContext/widgets, navigation, UI logic
+- Business logic, state (ObservableProperty), commands, derived values (ComputedProperty)
+- Do not reference BuildContext/widgets, navigation, UI logic
 
 **View (Widgets):**
-- ✅ Use `Bind`/`Command` widgets, handle navigation
-- ❌ Business logic, data validation, direct state modification
+- Use `Bind`/`Command` widgets, handle navigation
+- No business logic, data validation, direct state modification
 
 **Binding Patterns:**
 - One-way: `bind: (vm) => vm.property.value`
 - Two-way: `bind: (vm) => vm.property`
-- ❌ Don't create new instances in binds (causes infinite rebuilds)
+- Don't create new instances in binds (causes infinite rebuilds)
 
 ## Performance
 
@@ -827,14 +827,14 @@ Fairy is designed for performance. Benchmark results comparing with popular stat
 
 | Category | Fairy | Provider | Riverpod |
 |----------|-------|----------|----------|
-| Widget Performance (1000 interactions) | 112.7% | 101.9% | **100%** 🥇 |
-| Memory Management (50 cycles) | 112.6% | 103.9% | **100%** 🥇 |
-| Selective Rebuild (explicit Bind) | **100%** 🥇 | 133.5% | 131.3% |
-| Auto-tracking Rebuild (Bind.viewModel) | **100%** 🥇 | 133.3% | 126.1% |
+| Widget Performance (1000 interactions) | 112.7% | 101.9% | **100%** |
+| Memory Management (50 cycles) | 112.6% | 103.9% | **100%** |
+| Selective Rebuild (explicit Bind) | **100%** | 133.5% | 131.3% |
+| Auto-tracking Rebuild (Bind.viewModel) | **100%** | 133.3% | 126.1% |
 
 ### Key Achievements
-- **🥇 Fastest Selective Rebuilds** - 31-34% faster with explicit binding
-- **🥇 Fastest Auto-tracking** - 26-33% faster while maintaining 100% rebuild efficiency
+- **Fastest Selective Rebuilds** - 31-34% faster with explicit binding
+- **Fastest Auto-tracking** - 26-33% faster while maintaining 100% rebuild efficiency
 - **Unique**: Only framework achieving 100% selective efficiency (500 rebuilds) vs 33% for Provider/Riverpod (1500 rebuilds)
 - **Memory**: **Intentional design decision** to use 13% more memory in exchange for 26-34% faster rebuilds (both auto-tracking and selective binding) plus superior developer experience with command auto-tracking
 
@@ -885,13 +885,13 @@ test('async command tracks loading', () async {
 
 | Feature | Fairy | Provider | Riverpod | GetX | BLoC |
 |---------|-------|----------|----------|------|------|
-| Code Generation | ❌ | ❌ | ✅ | ❌ | ❌ |
-| Type Safety | ✅ | ✅ | ✅ | ⚠️ | ✅ |
+| Code Generation | No | No | Yes | No | No |
+| Type Safety | Yes | Yes | Yes | Partial | Yes |
 | Boilerplate | **Low** | Low | Medium | Low | High |
 | Learning Curve | **Low** | Low | Medium | Low | Medium |
-| Command Pattern | **✅** | ❌ | ❌ | ❌ | ❌ |
-| Two-Way Binding | **✅** | ❌ | ❌ | ✅ | ❌ |
-| Auto-Disposal | **✅** | ⚠️ | ✅ | ✅ | ⚠️ |
+| Command Pattern | **Yes** | No | No | No | No |
+| Two-Way Binding | **Yes** | No | No | Yes | No |
+| Auto-Disposal | **Yes** | Partial | Yes | Yes | Partial |
 
 ## Documentation
 
@@ -906,9 +906,9 @@ Fairy follows a **non-breaking minor version** principle:
 - **Patch versions** (v1.1.1, v2.0.1): Bug fixes and documentation updates only
 
 **Examples:**
-- ✅ v1.1, v1.2, v1.3 → All backward compatible with v1.0
-- ✅ v2.1, v2.2, v2.3 → All backward compatible with v2.0
-- ⚠️ v2.0 → May have breaking changes from v1.x (see CHANGELOG for migration guide)
+- v1.1, v1.2, v1.3 → All backward compatible with v1.0
+- v2.1, v2.2, v2.3 → All backward compatible with v2.0
+- v2.0 → May have breaking changes from v1.x (see CHANGELOG for migration guide)
 
 **Upgrade confidence:** You can safely upgrade within the same major version without code changes.
 
@@ -916,7 +916,7 @@ Fairy follows a **non-breaking minor version** principle:
 
 ## License
 
-BSD 3-Clause License - see LICENSE file for details.
+Apache License 2.0 - see LICENSE file for details.
 
 ## Contributing
 
